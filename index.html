@@ -1,1 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Bryce Game Studio 個人遊戲開發作品集，收錄 Hooded Escape 與後續遊戲 Demo。"
+  >
+
+  <title>Bryce Game Studio</title>
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <div class="page-background" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="回到首頁">
+      <span class="brand-mark">B</span>
+
+      <span class="brand-text">
+        <strong>BRYCE</strong>
+        <small>GAME STUDIO</small>
+      </span>
+    </a>
+
+    <button
+      class="menu-button"
+      id="menuButton"
+      type="button"
+      aria-label="開啟導覽選單"
+      aria-expanded="false"
+      aria-controls="mainNavigation"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="main-navigation" id="mainNavigation">
+      <a href="#home">首頁</a>
+      <a href="#games">遊戲作品</a>
+      <a href="#about">關於我</a>
+
+      <a
+        href="https://github.com/stun0019"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section" id="home">
+      <div class="hero-content">
+        <p class="eyebrow">INDEPENDENT GAME DEVELOPMENT PORTFOLIO</p>
+
+        <h1>
+          Welcome to
+          <span>Bryce Game Studio</span>
+        </h1>
+
+        <p class="hero-description">
+          這裡收錄我的遊戲開發作品、實驗性 Demo 與持續更新中的專案。
+          每一款作品都代表一個新的技術練習與設計挑戰。
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-button" href="#games">
+            進入遊戲大廳
+          </a>
+
+          <a
+            class="secondary-button"
+            href="https://github.com/stun0019/Bryce-Game-Studio"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            查看 Studio 原始碼
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-panel" aria-label="作品集狀態">
+        <div class="panel-header">
+          <span>STUDIO STATUS</span>
+          <span class="online-indicator">ONLINE</span>
+        </div>
+
+        <div class="status-grid">
+          <article class="status-item">
+            <strong id="gameCount">01</strong>
+            <span>目前作品</span>
+          </article>
+
+          <article class="status-item">
+            <strong>HTML</strong>
+            <span>目前平台</span>
+          </article>
+
+          <article class="status-item">
+            <strong>V0.1</strong>
+            <span>大廳版本</span>
+          </article>
+
+          <article class="status-item">
+            <strong>2026</strong>
+            <span>開始年份</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="games-section" id="games">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">SELECT A PROJECT</p>
+          <h2>遊戲作品</h2>
+        </div>
+
+        <p>
+          選擇作品以查看介紹、遊玩 Demo 或前往 GitHub Repository。
+        </p>
+      </div>
+
+      <div
+        class="game-grid"
+        id="gameGrid"
+        aria-live="polite"
+      >
+        <article class="loading-card">
+          <div class="loading-spinner"></div>
+          <p>正在載入遊戲資料……</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-section" id="about">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ABOUT THE DEVELOPER</p>
+          <h2>關於我</h2>
+        </div>
+      </div>
+
+      <div class="about-layout">
+        <article class="about-card">
+          <h3>Bryce</h3>
+
+          <p>
+            正在累積遊戲開發作品與實作經驗，現階段以小型、可遊玩且具完整流程的
+            Demo 為主要開發方向。
+          </p>
+
+          <p>
+            Bryce Game Studio 將作為統一的遊戲作品集入口，後續完成的新作品也會
+            持續加入這座遊戲大廳。
+          </p>
+        </article>
+
+        <article class="skills-card">
+          <h3>目前使用技術</h3>
+
+          <ul class="skill-list">
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>JavaScript</li>
+            <li>2D Sprite Animation</li>
+            <li>Responsive UI</li>
+            <li>GitHub Pages</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      © <span id="currentYear"></span> Bryce Game Studio
+    </p>
+
+    <p>Designed and developed by Bryce.</p>
+  </footer>
+
+  <div
+    class="modal-backdrop"
+    id="gameModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+    hidden
+  >
+    <div class="game-modal">
+      <button
+        class="modal-close"
+        id="modalClose"
+        type="button"
+        aria-label="關閉作品介紹"
+      >
+        ×
+      </button>
+
+      <div class="modal-image-wrapper">
+        <img id="modalImage" src="" alt="">
+      </div>
+
+      <div class="modal-content">
+        <p class="modal-status" id="modalStatus"></p>
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+
+        <div class="modal-details">
+          <div>
+            <span>遊戲類型</span>
+            <strong id="modalGenre"></strong>
+          </div>
+
+          <div>
+            <span>開發工具</span>
+            <strong id="modalTechnology"></strong>
+          </div>
+
+          <div>
+            <span>完成度</span>
+            <strong id="modalProgress"></strong>
+          </div>
+        </div>
+
+        <div class="modal-feature-section">
+          <h3>目前內容</h3>
+          <ul id="modalFeatures"></ul>
+        </div>
+
+        <div class="modal-actions">
+          <a
+            class="primary-button"
+            id="modalPlayButton"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            開始遊戲
+          </a>
+
+          <a
+            class="secondary-button"
+            id="modalRepositoryButton"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            查看原始碼
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
