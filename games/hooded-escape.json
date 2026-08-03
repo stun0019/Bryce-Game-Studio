@@ -1,0 +1,71 @@
+{
+  "id": "hooded-escape",
+  "title": "Hooded Escape",
+  "status": "PLAYABLE PROTOTYPE",
+  "genre": "2D Platform Action",
+  "progress": "Demo V0.1",
+  "releaseYear": 2026,
+
+  "shortDescription": "操作神秘斗篷角色，在危險環境中移動、跳躍與戰鬥的 2D 平台動作 Demo。",
+
+  "description": "Hooded Escape 是 Bryce Game Studio 的第一款遊戲 Demo。玩家將操作一名神秘斗篷角色，透過行走、奔跑、跳躍、下蹲與攻擊等動作，在關卡中避開危險並尋找逃離路線。本作品目前以角色控制、Sprite 動畫、碰撞與基礎遊戲流程為主要開發重點。",
+
+  "technologies": [
+    "HTML5",
+    "CSS3",
+    "JavaScript"
+  ],
+
+  "features": [
+    "Idle 待機動畫",
+    "Idle Blink 眨眼動畫",
+    "Walk 行走動畫",
+    "Run 奔跑動畫",
+    "Duck 下蹲動畫",
+    "Jump 跳躍動畫",
+    "Attack 攻擊動畫",
+    "Disappear 消失動畫",
+    "Die 死亡動畫",
+    "鍵盤角色操作",
+    "基礎碰撞系統",
+    "基礎遊戲流程"
+  ],
+
+  "controls": [
+    {
+      "key": "A / D",
+      "action": "左右移動"
+    },
+    {
+      "key": "Shift",
+      "action": "奔跑"
+    },
+    {
+      "key": "Space",
+      "action": "跳躍"
+    },
+    {
+      "key": "S",
+      "action": "下蹲"
+    },
+    {
+      "key": "J",
+      "action": "攻擊"
+    }
+  ],
+
+  "responsibilities": [
+    "遊戲流程設計",
+    "角色控制系統",
+    "Sprite 動畫整合",
+    "碰撞系統",
+    "遊戲介面設計",
+    "關卡與操作測試"
+  ],
+
+  "coverImage": "./assets/images/hooded-escape-cover.png",
+  "coverImageAlt": "Hooded Escape 遊戲封面",
+
+  "gameUrl": "請替換成 Hooded Escape 的 GitHub Pages 網址",
+  "repositoryUrl": "請替換成 Hooded Escape 的 GitHub Repository 網址"
+}
