@@ -5,124 +5,316 @@ const GAME_DATA_FILES = [
   "./games/Gomoku-Magic.json"
 ];
 
-const UPCOMING_PROJECT_COUNT = 2;
+const GAME_THEMES = {
+  "hooded-escape": {
+    theme: "hooded",
+    label: "SHADOW PROTOCOL",
+    monogram: "HE"
+  },
 
-const gameGrid = document.getElementById("gameGrid");
-const gameCount = document.getElementById("gameCount");
+  "gomoku-magic": {
+    theme: "gomoku",
+    label: "ARCANE BOARD",
+    monogram: "GM"
+  }
+};
 
-const menuButton = document.getElementById("menuButton");
-const mainNavigation = document.getElementById("mainNavigation");
+const elements = {
+  gameGrid:
+    document.getElementById("gameGrid"),
 
-const gameModal = document.getElementById("gameModal");
-const modalClose = document.getElementById("modalClose");
+  gameCount:
+    document.getElementById("gameCount"),
 
-const modalImage = document.getElementById("modalImage");
-const modalStatus = document.getElementById("modalStatus");
-const modalTitle = document.getElementById("modalTitle");
-const modalDescription = document.getElementById("modalDescription");
-const modalGenre = document.getElementById("modalGenre");
-const modalTechnology = document.getElementById("modalTechnology");
-const modalProgress = document.getElementById("modalProgress");
-const modalFeatures = document.getElementById("modalFeatures");
-const modalPlayButton = document.getElementById("modalPlayButton");
-const modalRepositoryButton = document.getElementById(
-  "modalRepositoryButton"
-);
+  currentYear:
+    document.getElementById("currentYear"),
+
+  menuButton:
+    document.getElementById("menuButton"),
+
+  navigation:
+    document.getElementById("mainNavigation"),
+
+  modalBackdrop:
+    document.getElementById("gameModal"),
+
+  modalPanel:
+    document.querySelector(".project-modal"),
+
+  modalClose:
+    document.getElementById("modalClose"),
+
+  modalArtwork:
+    document.getElementById("modalArtwork"),
+
+  modalCoverImage:
+    document.getElementById("modalCoverImage"),
+
+  modalProjectNumber:
+    document.getElementById(
+      "modalProjectNumber"
+    ),
+
+  modalThemeLabel:
+    document.getElementById(
+      "modalThemeLabel"
+    ),
+
+  modalMonogram:
+    document.getElementById("modalMonogram"),
+
+  modalStatus:
+    document.getElementById("modalStatus"),
+
+  modalTitle:
+    document.getElementById("modalTitle"),
+
+  modalDescription:
+    document.getElementById(
+      "modalDescription"
+    ),
+
+  modalGenre:
+    document.getElementById("modalGenre"),
+
+  modalProgress:
+    document.getElementById("modalProgress"),
+
+  modalYear:
+    document.getElementById("modalYear"),
+
+  modalTechnologies:
+    document.getElementById(
+      "modalTechnologies"
+    ),
+
+  modalFeatures:
+    document.getElementById(
+      "modalFeatures"
+    ),
+
+  modalControls:
+    document.getElementById(
+      "modalControls"
+    ),
+
+  modalResponsibilities:
+    document.getElementById(
+      "modalResponsibilities"
+    ),
+
+  modalPlayButton:
+    document.getElementById(
+      "modalPlayButton"
+    ),
+
+  modalRepositoryButton:
+    document.getElementById(
+      "modalRepositoryButton"
+    )
+};
 
 let loadedGames = [];
 let lastFocusedElement = null;
 
-document.addEventListener("DOMContentLoaded", initializeStudio);
+window.addEventListener(
+  "DOMContentLoaded",
+  initializeStudio
+);
 
 async function initializeStudio() {
   setCurrentYear();
-  bindNavigationEvents();
-  bindModalEvents();
+  bindNavigation();
+  bindModal();
 
   await loadGames();
 }
 
 function setCurrentYear() {
-  const yearElement = document.getElementById("currentYear");
-
-  if (yearElement) {
-    yearElement.textContent = String(new Date().getFullYear());
+  if (elements.currentYear) {
+    elements.currentYear.textContent =
+      String(new Date().getFullYear());
   }
 }
 
-function bindNavigationEvents() {
-  if (!menuButton || !mainNavigation) {
+function bindNavigation() {
+  if (
+    !elements.menuButton ||
+    !elements.navigation
+  ) {
     return;
   }
 
-  menuButton.addEventListener("click", () => {
-    const isOpen = mainNavigation.classList.toggle("open");
+  elements.menuButton.addEventListener(
+    "click",
+    () => {
+      const isOpen =
+        elements.navigation.classList.toggle(
+          "is-open"
+        );
 
-    menuButton.setAttribute(
-      "aria-expanded",
-      String(isOpen)
-    );
-  });
+      elements.menuButton.classList.toggle(
+        "is-open",
+        isOpen
+      );
 
-  mainNavigation.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      mainNavigation.classList.remove("open");
-      menuButton.setAttribute("aria-expanded", "false");
+      elements.menuButton.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
+    }
+  );
+
+  elements.navigation
+    .querySelectorAll("a")
+    .forEach((link) => {
+      link.addEventListener(
+        "click",
+        closeNavigation
+      );
     });
-  });
 
-  document.addEventListener("click", (event) => {
-    const clickedInsideNavigation =
-      mainNavigation.contains(event.target);
+  document.addEventListener(
+    "click",
+    (event) => {
+      const clickedNavigation =
+        elements.navigation.contains(
+          event.target
+        );
 
-    const clickedMenuButton =
-      menuButton.contains(event.target);
+      const clickedButton =
+        elements.menuButton.contains(
+          event.target
+        );
 
-    if (!clickedInsideNavigation && !clickedMenuButton) {
-      mainNavigation.classList.remove("open");
-      menuButton.setAttribute("aria-expanded", "false");
+      if (
+        !clickedNavigation &&
+        !clickedButton
+      ) {
+        closeNavigation();
+      }
     }
-  });
+  );
 }
 
-function bindModalEvents() {
-  if (!gameModal || !modalClose) {
+function closeNavigation() {
+  if (
+    !elements.menuButton ||
+    !elements.navigation
+  ) {
     return;
   }
 
-  modalClose.addEventListener("click", closeGameModal);
+  elements.navigation.classList.remove(
+    "is-open"
+  );
 
-  gameModal.addEventListener("click", (event) => {
-    if (event.target === gameModal) {
-      closeGameModal();
-    }
-  });
+  elements.menuButton.classList.remove(
+    "is-open"
+  );
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !gameModal.hidden) {
-      closeGameModal();
+  elements.menuButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+}
+
+function bindModal() {
+  if (
+    !elements.modalBackdrop ||
+    !elements.modalClose
+  ) {
+    return;
+  }
+
+  elements.modalClose.addEventListener(
+    "click",
+    closeGameModal
+  );
+
+  elements.modalBackdrop.addEventListener(
+    "click",
+    (event) => {
+      if (
+        event.target ===
+        elements.modalBackdrop
+      ) {
+        closeGameModal();
+      }
     }
-  });
+  );
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (elements.modalBackdrop.hidden) {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        closeGameModal();
+      }
+
+      if (event.key === "Tab") {
+        trapModalFocus(event);
+      }
+    }
+  );
 }
 
 async function loadGames() {
-  try {
-    const results = await Promise.all(
-      GAME_DATA_FILES.map(loadGameData)
+  if (!elements.gameGrid) {
+    return;
+  }
+
+  const results =
+    await Promise.allSettled(
+      GAME_DATA_FILES.map(
+        (filePath) =>
+          loadGameData(filePath)
+      )
     );
 
-    loadedGames = results.filter(Boolean);
+  loadedGames = results
+    .filter(
+      (result) =>
+        result.status === "fulfilled"
+    )
+    .map(
+      (result) => result.value
+    );
 
-    renderGameLobby(loadedGames);
-    updateGameCount(loadedGames.length);
-  } catch (error) {
-    console.error("遊戲資料載入失敗：", error);
-    renderLoadError(error);
+  const failedResults =
+    results.filter(
+      (result) =>
+        result.status === "rejected"
+    );
+
+  if (loadedGames.length === 0) {
+    renderLoadError(failedResults);
+    updateGameCount(0);
+
+    return;
   }
+
+  renderGameLibrary(loadedGames);
+  updateGameCount(loadedGames.length);
+
+  failedResults.forEach((result) => {
+    console.error(
+      "遊戲資料載入失敗：",
+      result.reason
+    );
+  });
 }
 
 async function loadGameData(filePath) {
-  const response = await fetch(filePath);
+  const response = await fetch(
+    filePath,
+    {
+      cache: "no-cache"
+    }
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -130,25 +322,29 @@ async function loadGameData(filePath) {
     );
   }
 
-  const gameData = await response.json();
+  const game = await response.json();
 
-  validateGameData(gameData, filePath);
+  validateGameData(game, filePath);
 
-  return gameData;
+  return game;
 }
 
-function validateGameData(gameData, filePath) {
+function validateGameData(
+  game,
+  filePath
+) {
   const requiredFields = [
     "id",
     "title",
-    "description",
+    "status",
     "genre",
-    "status"
+    "description"
   ];
 
-  const missingFields = requiredFields.filter(
-    (field) => !gameData[field]
-  );
+  const missingFields =
+    requiredFields.filter(
+      (field) => !game[field]
+    );
 
   if (missingFields.length > 0) {
     throw new Error(
@@ -157,122 +353,183 @@ function validateGameData(gameData, filePath) {
   }
 }
 
-function renderGameLobby(games) {
-  if (!gameGrid) {
-    return;
-  }
+function renderGameLibrary(games) {
+  elements.gameGrid.innerHTML = "";
 
-  gameGrid.innerHTML = "";
-
-  games.forEach((game) => {
-    const gameCard = createGameCard(game);
-    gameGrid.appendChild(gameCard);
-  });
-
-  for (
-    let projectNumber = 1;
-    projectNumber <= UPCOMING_PROJECT_COUNT;
-    projectNumber += 1
-  ) {
-    gameGrid.appendChild(
-      createLockedCard(projectNumber)
-    );
-  }
+  games.forEach(
+    (game, index) => {
+      elements.gameGrid.appendChild(
+        createGameCard(game, index)
+      );
+    }
+  );
 }
 
-function createGameCard(game) {
-  const article = document.createElement("article");
+function createGameCard(
+  game,
+  index
+) {
+  const article =
+    document.createElement("article");
+
+  const theme =
+    getGameTheme(game);
+
+  const projectNumber =
+    formatProjectNumber(index + 1);
+
+  const technologies =
+    normalizeStringArray(
+      game.technologies
+    ).slice(0, 3);
+
+  const hasCoverImage =
+    isNonEmptyString(
+      game.coverImage
+    );
 
   article.className = "game-card";
 
-  const hasCoverImage =
-    typeof game.coverImage === "string" &&
-    game.coverImage.trim() !== "";
-
-  const technologies = Array.isArray(game.technologies)
-    ? game.technologies.slice(0, 3).join(" / ")
-    : "Game Project";
-
-  const coverContent = hasCoverImage
-    ? `
-      <img
-        src="${escapeAttribute(game.coverImage)}"
-        alt="${escapeAttribute(
-          game.coverImageAlt || game.title
-        )}"
-        loading="lazy"
-      >
-    `
-    : `
-      <div class="game-cover-placeholder">
-        <span>${escapeHTML(game.title)}</span>
-      </div>
-    `;
+  article.dataset.theme =
+    theme.theme;
 
   article.innerHTML = `
-    <div class="game-cover">
-      <span class="game-status">
-        ${escapeHTML(game.status)}
-      </span>
+    <div class="game-card__artwork">
+      <div
+        class="game-card__visual"
+        aria-hidden="true"
+      >
+        <span class="game-card__orbit"></span>
 
-      ${coverContent}
-    </div>
-
-    <div class="game-content">
-      <div class="game-meta">
-        <span>${escapeHTML(game.genre)}</span>
-        <span>•</span>
-        <span>${escapeHTML(technologies)}</span>
+        <span class="game-card__monogram">
+          ${escapeHTML(theme.monogram)}
+        </span>
       </div>
 
-      <h3>${escapeHTML(game.title)}</h3>
+      ${
+        hasCoverImage
+          ? `
+            <img
+              class="game-card__cover"
+              src="${escapeAttribute(game.coverImage)}"
+              alt="${escapeAttribute(
+                game.coverImageAlt ||
+                game.title
+              )}"
+              loading="lazy"
+            >
+          `
+          : ""
+      }
 
-      <p>
+      <div class="game-card__topline">
+        <span>
+          PROJECT ${projectNumber}
+        </span>
+
+        <span class="status-badge">
+          ${escapeHTML(game.status)}
+        </span>
+      </div>
+
+      <div class="game-card__art-label">
+        ${escapeHTML(theme.label)}
+      </div>
+    </div>
+
+    <div class="game-card__content">
+      <div class="game-card__heading">
+        <div>
+          <p>
+            ${escapeHTML(game.genre)}
+          </p>
+
+          <h3>
+            ${escapeHTML(game.title)}
+          </h3>
+        </div>
+
+        <span class="game-card__version">
+          ${escapeHTML(
+            game.progress || "DEMO"
+          )}
+        </span>
+      </div>
+
+      <p class="game-card__description">
         ${escapeHTML(
-          game.shortDescription || game.description
+          game.shortDescription ||
+          game.description
         )}
       </p>
 
-      <div class="card-actions">
-        ${createGameButton(game.gameUrl)}
+      <ul
+        class="technology-list"
+        aria-label="使用技術"
+      >
+        ${technologies
+          .map(
+            (technology) =>
+              `<li>${escapeHTML(
+                technology
+              )}</li>`
+          )
+          .join("")}
+      </ul>
+
+      <div class="game-card__actions">
+        ${createPlayLink(
+          game.gameUrl
+        )}
 
         <button
-          class="details-button"
+          class="button button--secondary js-project-details"
           type="button"
-          data-game-id="${escapeAttribute(game.id)}"
         >
-          作品介紹
+          作品資訊
         </button>
       </div>
     </div>
   `;
 
-  const detailsButton = article.querySelector(
-    `[data-game-id="${CSS.escape(game.id)}"]`
+  const detailsButton =
+    article.querySelector(
+      ".js-project-details"
+    );
+
+  detailsButton.addEventListener(
+    "click",
+    () => {
+      openGameModal(
+        game,
+        index,
+        detailsButton
+      );
+    }
   );
 
-  if (detailsButton) {
-    detailsButton.addEventListener("click", () => {
-      openGameModal(game, detailsButton);
-    });
-  }
+  const coverImage =
+    article.querySelector(
+      ".game-card__cover"
+    );
 
-  const image = article.querySelector("img");
-
-  if (image) {
-    image.addEventListener("error", () => {
-      replaceBrokenImage(image, game.title);
-    });
+  if (coverImage) {
+    coverImage.addEventListener(
+      "error",
+      () => {
+        coverImage.remove();
+      }
+    );
   }
 
   return article;
 }
 
-function createGameButton(gameUrl) {
-  if (!isValidUrl(gameUrl)) {
+function createPlayLink(gameUrl) {
+  if (!isValidHttpUrl(gameUrl)) {
     return `
       <button
-        class="primary-button disabled"
+        class="button button--primary"
         type="button"
         disabled
       >
@@ -283,256 +540,525 @@ function createGameButton(gameUrl) {
 
   return `
     <a
-      class="primary-button"
+      class="button button--primary"
       href="${escapeAttribute(gameUrl)}"
       target="_blank"
       rel="noopener noreferrer"
     >
       開始遊戲
+      <span aria-hidden="true">↗</span>
     </a>
   `;
 }
 
-function createLockedCard(projectNumber) {
-  const article = document.createElement("article");
-
-  const projectIndex =
-    loadedGames.length + projectNumber;
-
-  article.className = "game-card locked-card";
-
-  article.innerHTML = `
-    <div class="locked-content">
-      <div class="lock-icon" aria-hidden="true">
-        ◆
-      </div>
-
-      <p class="eyebrow">
-        PROJECT ${String(projectIndex).padStart(2, "0")}
-      </p>
-
-      <h3>尚未解鎖</h3>
-
-      <p>
-        下一款遊戲 Demo 完成後將會加入這個位置。
-      </p>
-    </div>
-  `;
-
-  return article;
-}
-
-function updateGameCount(count) {
-  if (!gameCount) {
+function openGameModal(
+  game,
+  index,
+  triggerElement
+) {
+  if (
+    !elements.modalBackdrop ||
+    !elements.modalPanel
+  ) {
     return;
   }
 
-  gameCount.textContent = String(count).padStart(2, "0");
-}
+  const theme =
+    getGameTheme(game);
 
-function openGameModal(game, triggerElement) {
-  if (!gameModal) {
-    return;
-  }
+  const projectNumber =
+    formatProjectNumber(index + 1);
 
   lastFocusedElement =
-    triggerElement || document.activeElement;
+    triggerElement ||
+    document.activeElement;
 
-  configureModalImage(game);
+  elements.modalPanel.dataset.theme =
+    theme.theme;
 
-  modalStatus.textContent =
-    game.status || "DEVELOPMENT PROJECT";
+  setText(
+    elements.modalProjectNumber,
+    `PROJECT ${projectNumber}`
+  );
 
-  modalTitle.textContent = game.title;
-  modalDescription.textContent = game.description;
+  setText(
+    elements.modalThemeLabel,
+    theme.label
+  );
 
-  modalGenre.textContent =
-    game.genre || "未設定";
+  setText(
+    elements.modalMonogram,
+    theme.monogram
+  );
 
-  modalTechnology.textContent =
-    Array.isArray(game.technologies)
-      ? game.technologies.join(" / ")
-      : "未設定";
+  setText(
+    elements.modalStatus,
+    game.status || "PROJECT"
+  );
 
-  modalProgress.textContent =
-    game.progress || "未設定";
+  setText(
+    elements.modalTitle,
+    game.title
+  );
 
-  renderFeatureList(game.features);
+  setText(
+    elements.modalDescription,
+    game.description
+  );
+
+  setText(
+    elements.modalGenre,
+    game.genre || "未設定"
+  );
+
+  setText(
+    elements.modalProgress,
+    game.progress || "未設定"
+  );
+
+  setText(
+    elements.modalYear,
+    game.releaseYear || "未設定"
+  );
+
+  renderTechnologyList(
+    game.technologies
+  );
+
+  renderFeatureList(
+    game.features
+  );
+
+  renderControlList(
+    game.controls
+  );
+
+  renderResponsibilityList(
+    game.responsibilities
+  );
+
+  configureModalArtwork(game);
 
   configureModalLink(
-    modalPlayButton,
-    game.gameUrl,
-    "開始遊戲"
+    elements.modalPlayButton,
+    game.gameUrl
   );
 
   configureModalLink(
-    modalRepositoryButton,
-    game.repositoryUrl,
-    "查看原始碼"
+    elements.modalRepositoryButton,
+    game.repositoryUrl
   );
 
-  gameModal.hidden = false;
-  document.body.classList.add("modal-open");
+  elements.modalBackdrop.hidden =
+    false;
 
-  if (modalClose) {
-    modalClose.focus();
-  }
+  document.body.classList.add(
+    "modal-open"
+  );
+
+  elements.modalClose.focus();
 }
 
-function configureModalImage(game) {
-  if (!modalImage || !gameModal) {
+function configureModalArtwork(game) {
+  if (
+    !elements.modalArtwork ||
+    !elements.modalCoverImage
+  ) {
     return;
   }
-
-  const modalContainer =
-    gameModal.querySelector(".game-modal");
 
   const hasCoverImage =
-    typeof game.coverImage === "string" &&
-    game.coverImage.trim() !== "";
+    isNonEmptyString(
+      game.coverImage
+    );
+
+  elements.modalArtwork
+    .classList
+    .toggle(
+      "has-cover",
+      hasCoverImage
+    );
+
+  elements.modalCoverImage.hidden =
+    !hasCoverImage;
+
+  elements.modalCoverImage
+    .removeAttribute("src");
+
+  elements.modalCoverImage.alt = "";
+
+  elements.modalCoverImage.onerror =
+    null;
 
   if (!hasCoverImage) {
-    modalImage.removeAttribute("src");
-    modalImage.alt = "";
-    modalImage.style.display = "none";
-
-    if (modalContainer) {
-      modalContainer.classList.add("no-cover");
-    }
-
     return;
   }
 
-  if (modalContainer) {
-    modalContainer.classList.remove("no-cover");
-  }
+  elements.modalCoverImage.src =
+    game.coverImage;
 
-  modalImage.src = game.coverImage;
-  modalImage.alt =
-    game.coverImageAlt || `${game.title} 遊戲封面`;
+  elements.modalCoverImage.alt =
+    game.coverImageAlt ||
+    `${game.title} 遊戲封面`;
 
-  modalImage.style.display = "block";
+  elements.modalCoverImage.onerror =
+    () => {
+      elements.modalCoverImage.hidden =
+        true;
 
-  modalImage.onerror = () => {
-    modalImage.removeAttribute("src");
-    modalImage.alt = "";
-    modalImage.style.display = "none";
-
-    if (modalContainer) {
-      modalContainer.classList.add("no-cover");
-    }
-  };
+      elements.modalArtwork
+        .classList
+        .remove("has-cover");
+    };
 }
 
-function closeGameModal() {
-  if (!gameModal) {
+function renderTechnologyList(
+  technologies
+) {
+  if (!elements.modalTechnologies) {
     return;
   }
 
-  gameModal.hidden = true;
-  document.body.classList.remove("modal-open");
+  const items =
+    normalizeStringArray(
+      technologies
+    );
 
-  if (
-    lastFocusedElement &&
-    typeof lastFocusedElement.focus === "function"
-  ) {
-    lastFocusedElement.focus();
-  }
-}
+  elements.modalTechnologies.innerHTML =
+    "";
 
-function renderFeatureList(features) {
-  if (!modalFeatures) {
+  if (items.length === 0) {
+    elements.modalTechnologies.innerHTML =
+      "<li>未設定</li>";
+
     return;
   }
 
-  modalFeatures.innerHTML = "";
+  items.forEach((technology) => {
+    const item =
+      document.createElement("li");
 
-  const safeFeatures =
-    Array.isArray(features) && features.length > 0
-      ? features
-      : ["作品內容整理中"];
+    item.textContent =
+      technology;
 
-  safeFeatures.forEach((feature) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = feature;
-
-    modalFeatures.appendChild(listItem);
+    elements.modalTechnologies
+      .appendChild(item);
   });
 }
 
-function configureModalLink(element, url, label) {
+function renderFeatureList(features) {
+  renderSimpleList(
+    elements.modalFeatures,
+    features,
+    "作品內容整理中"
+  );
+}
+
+function renderResponsibilityList(
+  responsibilities
+) {
+  renderSimpleList(
+    elements.modalResponsibilities,
+    responsibilities,
+    "開發內容整理中"
+  );
+}
+
+function renderSimpleList(
+  container,
+  values,
+  fallbackText
+) {
+  if (!container) {
+    return;
+  }
+
+  const items =
+    normalizeStringArray(values);
+
+  container.innerHTML = "";
+
+  const safeItems =
+    items.length > 0
+      ? items
+      : [fallbackText];
+
+  safeItems.forEach((value) => {
+    const item =
+      document.createElement("li");
+
+    item.textContent = value;
+
+    container.appendChild(item);
+  });
+}
+
+function renderControlList(controls) {
+  if (!elements.modalControls) {
+    return;
+  }
+
+  elements.modalControls.innerHTML =
+    "";
+
+  if (
+    !Array.isArray(controls) ||
+    controls.length === 0
+  ) {
+    const item =
+      document.createElement("li");
+
+    item.innerHTML =
+      "<span>操作方式整理中</span>";
+
+    elements.modalControls
+      .appendChild(item);
+
+    return;
+  }
+
+  controls.forEach((control) => {
+    const item =
+      document.createElement("li");
+
+    const key =
+      document.createElement("kbd");
+
+    const action =
+      document.createElement("span");
+
+    key.textContent =
+      control?.key || "—";
+
+    action.textContent =
+      control?.action || "未設定";
+
+    item.append(
+      key,
+      action
+    );
+
+    elements.modalControls
+      .appendChild(item);
+  });
+}
+
+function configureModalLink(
+  element,
+  url
+) {
   if (!element) {
     return;
   }
 
-  element.textContent = label;
-  element.onclick = null;
+  const isAvailable =
+    isValidHttpUrl(url);
 
-  if (isValidUrl(url)) {
+  element.classList.toggle(
+    "is-disabled",
+    !isAvailable
+  );
+
+  element.setAttribute(
+    "aria-disabled",
+    String(!isAvailable)
+  );
+
+  if (isAvailable) {
     element.href = url;
     element.target = "_blank";
-    element.rel = "noopener noreferrer";
+    element.rel =
+      "noopener noreferrer";
 
-    element.removeAttribute("aria-disabled");
-    element.classList.remove("disabled");
+    element.onclick = null;
 
     return;
   }
 
   element.href = "#";
+
   element.removeAttribute("target");
   element.removeAttribute("rel");
 
-  element.setAttribute("aria-disabled", "true");
-  element.classList.add("disabled");
-
-  element.onclick = (event) => {
-    event.preventDefault();
-  };
+  element.onclick =
+    (event) => {
+      event.preventDefault();
+    };
 }
 
-function replaceBrokenImage(image, title) {
-  const placeholder = document.createElement("div");
-
-  placeholder.className = "game-cover-placeholder";
-
-  const titleElement = document.createElement("span");
-  titleElement.textContent = title;
-
-  placeholder.appendChild(titleElement);
-  image.replaceWith(placeholder);
-}
-
-function renderLoadError(error) {
-  if (!gameGrid) {
+function closeGameModal() {
+  if (!elements.modalBackdrop) {
     return;
   }
 
-  gameGrid.innerHTML = `
-    <article class="error-card">
-      <h3>遊戲資料載入失敗</h3>
+  elements.modalBackdrop.hidden =
+    true;
 
-      <p>
-        請確認以下 JSON 檔案存在，並檢查檔名大小寫：
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+  if (
+    lastFocusedElement &&
+    typeof lastFocusedElement.focus ===
+      "function"
+  ) {
+    lastFocusedElement.focus();
+  }
+}
+
+function trapModalFocus(event) {
+  if (!elements.modalPanel) {
+    return;
+  }
+
+  const focusableElements =
+    Array.from(
+      elements.modalPanel.querySelectorAll(
+        'a[href]:not(.is-disabled), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    );
+
+  if (
+    focusableElements.length === 0
+  ) {
+    return;
+  }
+
+  const firstElement =
+    focusableElements[0];
+
+  const lastElement =
+    focusableElements[
+      focusableElements.length - 1
+    ];
+
+  if (
+    event.shiftKey &&
+    document.activeElement ===
+      firstElement
+  ) {
+    event.preventDefault();
+
+    lastElement.focus();
+  } else if (
+    !event.shiftKey &&
+    document.activeElement ===
+      lastElement
+  ) {
+    event.preventDefault();
+
+    firstElement.focus();
+  }
+}
+
+function renderLoadError(
+  failedResults
+) {
+  const errorMessage =
+    failedResults
+      .map(
+        (result) =>
+          result.reason?.message
+      )
+      .filter(Boolean)
+      .join("；");
+
+  elements.gameGrid.innerHTML = `
+    <article class="load-error">
+      <p class="load-error__label">
+        LIBRARY ERROR
       </p>
 
-      <p>
-        games/hooded-escape.json<br>
-        games/Gomoku-Magic.json
-      </p>
+      <h2>
+        遊戲資料載入失敗
+      </h2>
 
       <p>
-        ${escapeHTML(error?.message || "未知錯誤")}
+        請確認 JSON 檔案名稱、
+        路徑與格式是否正確。
       </p>
+
+      <code>
+        ${escapeHTML(
+          errorMessage ||
+          "未知錯誤"
+        )}
+      </code>
     </article>
   `;
 }
 
-function isValidUrl(value) {
-  if (
-    typeof value !== "string" ||
-    value.trim() === ""
-  ) {
+function updateGameCount(count) {
+  if (elements.gameCount) {
+    elements.gameCount.textContent =
+      String(count).padStart(2, "0");
+  }
+}
+
+function getGameTheme(game) {
+  return (
+    GAME_THEMES[game.id] || {
+      theme: "default",
+      label: "INDEPENDENT PROJECT",
+      monogram:
+        getMonogram(game.title)
+    }
+  );
+}
+
+function getMonogram(title) {
+  const normalizedTitle =
+    String(title || "GAME").trim();
+
+  const words =
+    normalizedTitle
+      .split(/\s+/)
+      .filter(Boolean);
+
+  if (words.length >= 2) {
+    return (
+      `${words[0][0]}${words[1][0]}`
+    ).toUpperCase();
+  }
+
+  return normalizedTitle
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function formatProjectNumber(
+  number
+) {
+  return String(number).padStart(
+    2,
+    "0"
+  );
+}
+
+function normalizeStringArray(
+  value
+) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter(isNonEmptyString)
+    .map(
+      (item) => item.trim()
+    );
+}
+
+function isNonEmptyString(value) {
+  return (
+    typeof value === "string" &&
+    value.trim() !== ""
+  );
+}
+
+function isValidHttpUrl(value) {
+  if (!isNonEmptyString(value)) {
     return false;
   }
 
@@ -545,6 +1071,16 @@ function isValidUrl(value) {
     );
   } catch {
     return false;
+  }
+}
+
+function setText(
+  element,
+  value
+) {
+  if (element) {
+    element.textContent =
+      String(value ?? "");
   }
 }
 
