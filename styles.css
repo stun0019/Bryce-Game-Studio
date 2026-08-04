@@ -61,8 +61,7 @@ body {
 
   color: var(--text);
 
-  background:
-    var(--background);
+  background: var(--background);
 
   font-family:
     Inter,
@@ -2685,7 +2684,7 @@ a:not(.main-navigation__github)::after {
 }
 
 /* =========================================================
-   手機
+   手機 Coverflow 輪播
    ========================================================= */
 
 @media (max-width: 650px) {
@@ -2712,16 +2711,285 @@ a:not(.main-navigation__github)::after {
     padding: 52px 0;
   }
 
+  .games-section.section-shell {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .games-section .section-heading {
+    width: calc(100% - 32px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
   .game-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+
+    width: 100%;
+    gap: 14px;
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    padding-top: 18px;
+    padding-right:
+      calc(
+        (100vw - min(78vw, 340px)) / 2
+      );
+    padding-bottom: 38px;
+    padding-left:
+      calc(
+        (100vw - min(78vw, 340px)) / 2
+      );
+
+    scroll-snap-type: x mandatory;
+
+    scroll-padding-right:
+      calc(
+        (100vw - min(78vw, 340px)) / 2
+      );
+
+    scroll-padding-left:
+      calc(
+        (100vw - min(78vw, 340px)) / 2
+      );
+
+    overscroll-behavior-x: contain;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .game-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .game-card {
+    flex:
+      0 0
+      min(78vw, 340px);
+
+    width:
+      min(78vw, 340px);
+
+    min-height: 500px;
+
+    opacity:
+      calc(
+        1 -
+        min(
+          var(
+            --carousel-distance,
+            1
+          ),
+          1
+        ) * 0.55
+      );
+
+    filter:
+      blur(
+        calc(
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 3px
+        )
+      )
+      saturate(
+        calc(
+          1 -
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 0.34
+        )
+      )
+      brightness(
+        calc(
+          1 -
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 0.2
+        )
+      );
+
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+
+    transform:
+      translateY(
+        calc(
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 15px
+        )
+      )
+      scale(
+        calc(
+          1 -
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 0.11
+        )
+      );
+
+    transform-origin: center;
+
+    transition:
+      opacity 420ms ease,
+      filter 420ms ease,
+      transform 480ms
+        cubic-bezier(
+          0.2,
+          0.75,
+          0.25,
+          1
+        ),
+      border-color 320ms ease,
+      box-shadow 420ms ease;
+  }
+
+  .game-card.is-carousel-active {
+    z-index: 3;
+
+    opacity: 1;
+    filter: none;
+
+    border-color:
+      color-mix(
+        in srgb,
+        var(--theme-primary) 52%,
+        transparent
+      );
+
+    box-shadow:
+      0 28px 74px
+        rgba(0, 0, 0, 0.38),
+      0 0 0 1px
+        color-mix(
+          in srgb,
+          var(--theme-primary) 18%,
+          transparent
+        ),
+      0 0 45px
+        color-mix(
+          in srgb,
+          var(--theme-primary) 11%,
+          transparent
+        );
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  .game-card:not(
+    .is-carousel-active
+  ) {
+    pointer-events: none;
+  }
+
+  .game-card:not(
+    .is-carousel-active
+  )
+  .game-card__content {
+    opacity: 0.68;
+  }
+
+  .game-card.is-carousel-active
+  .game-card__content {
+    opacity: 1;
+  }
+
+  .game-card__content {
+    transition:
+      opacity 380ms ease;
   }
 
   .game-card:hover {
-    transform: translateY(-5px);
+    border-color: var(--line);
+
+    box-shadow:
+      0 22px 68px
+        rgba(0, 0, 0, 0.24);
+
+    transform:
+      translateY(
+        calc(
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 15px
+        )
+      )
+      scale(
+        calc(
+          1 -
+          min(
+            var(
+              --carousel-distance,
+              1
+            ),
+            1
+          ) * 0.11
+        )
+      );
+  }
+
+  .game-card.is-carousel-active:hover {
+    border-color:
+      color-mix(
+        in srgb,
+        var(--theme-primary) 52%,
+        transparent
+      );
+
+    box-shadow:
+      0 28px 74px
+        rgba(0, 0, 0, 0.38),
+      0 0 0 1px
+        color-mix(
+          in srgb,
+          var(--theme-primary) 18%,
+          transparent
+        ),
+      0 0 45px
+        color-mix(
+          in srgb,
+          var(--theme-primary) 11%,
+          transparent
+        );
+
+    transform:
+      translateY(0)
+      scale(1);
   }
 
   .game-card__artwork {
-    min-height: 245px;
+    min-height: 230px;
   }
 
   .game-card__hover-actions {
@@ -2735,24 +3003,73 @@ a:not(.main-navigation__github)::after {
   .game-card:hover
   .game-card__status {
     opacity: 1;
-
     transform: none;
   }
 
   .game-card:hover
   .game-card__art-footer {
     opacity: 1;
-
     transform: none;
   }
 
+  .game-card:hover
+  .game-card__monogram {
+    opacity: 1;
+    transform: none;
+  }
+
+  .game-card:hover
+  .game-card__visual {
+    transform: none;
+  }
+
+  .game-card:hover
+  .game-card__artwork::before {
+    opacity: 0.25;
+    transform: none;
+  }
+
+  .game-card:hover
+  .game-card__ring--outer {
+    transform: none;
+  }
+
+  .game-card:hover
+  .game-card__ring--inner {
+    transform: rotate(25deg);
+  }
+
+  .game-card__status {
+    max-width: 58%;
+  }
+
   .game-card__content {
-    padding: 22px;
+    padding: 21px;
   }
 
   .game-card__heading {
     flex-direction: column;
-    gap: 12px;
+    gap: 11px;
+  }
+
+  .game-card__heading h3 {
+    font-size: 27px;
+  }
+
+  .game-card__description {
+    display: -webkit-box;
+    overflow: hidden;
+
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .game-card.is-carousel-left {
+    transform-origin: right center;
+  }
+
+  .game-card.is-carousel-right {
+    transform-origin: left center;
   }
 
   .upcoming-card {
