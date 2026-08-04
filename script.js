@@ -1,9 +1,17 @@
 "use strict";
 
+/* =========================================================
+   Bryce Game Studio
+   Game Lobby V0.3
+   ========================================================= */
+
 const GAME_DATA_FILES = [
   "./games/hooded-escape.json",
-  "./games/Gomoku-Magic.json"
+  "./games/Gomoku-Magic.json",
+  "./games/game-cook.json"
 ];
+
+const UPCOMING_PROJECT_COUNT = 3;
 
 const GAME_THEMES = {
   "hooded-escape": {
@@ -16,202 +24,153 @@ const GAME_THEMES = {
     theme: "gomoku",
     label: "ARCANE BOARD",
     monogram: "GM"
+  },
+
+  "game-cook": {
+    theme: "cooking",
+    label: "KITCHEN RUSH",
+    monogram: "GC"
   }
 };
 
 const elements = {
-  gameGrid:
-    document.getElementById("gameGrid"),
+  body: document.body,
 
-  gameCount:
-    document.getElementById("gameCount"),
+  gameGrid: document.getElementById("gameGrid"),
+  gameCount: document.getElementById("gameCount"),
+  currentYear: document.getElementById("currentYear"),
 
-  currentYear:
-    document.getElementById("currentYear"),
+  upcomingGrid: document.getElementById("upcomingGrid"),
 
-  menuButton:
-    document.getElementById("menuButton"),
+  menuButton: document.getElementById("menuButton"),
+  navigation: document.getElementById("mainNavigation"),
 
-  navigation:
-    document.getElementById("mainNavigation"),
+  modalBackdrop: document.getElementById("gameModal"),
+  modalPanel: document.querySelector(".project-modal"),
+  modalClose: document.getElementById("modalClose"),
 
-  modalBackdrop:
-    document.getElementById("gameModal"),
+  modalArtwork: document.getElementById("modalArtwork"),
+  modalCoverImage: document.getElementById("modalCoverImage"),
+  modalMonogram: document.getElementById("modalMonogram"),
+  modalProjectNumber: document.getElementById("modalProjectNumber"),
+  modalThemeLabel: document.getElementById("modalThemeLabel"),
 
-  modalPanel:
-    document.querySelector(".project-modal"),
+  modalStatus: document.getElementById("modalStatus"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalDescription: document.getElementById("modalDescription"),
 
-  modalClose:
-    document.getElementById("modalClose"),
+  modalGenre: document.getElementById("modalGenre"),
+  modalProgress: document.getElementById("modalProgress"),
+  modalYear: document.getElementById("modalYear"),
 
-  modalArtwork:
-    document.getElementById("modalArtwork"),
+  modalTechnologies: document.getElementById("modalTechnologies"),
+  modalFeatures: document.getElementById("modalFeatures"),
+  modalControls: document.getElementById("modalControls"),
+  modalResponsibilities: document.getElementById(
+    "modalResponsibilities"
+  ),
 
-  modalCoverImage:
-    document.getElementById("modalCoverImage"),
-
-  modalProjectNumber:
-    document.getElementById(
-      "modalProjectNumber"
-    ),
-
-  modalThemeLabel:
-    document.getElementById(
-      "modalThemeLabel"
-    ),
-
-  modalMonogram:
-    document.getElementById("modalMonogram"),
-
-  modalStatus:
-    document.getElementById("modalStatus"),
-
-  modalTitle:
-    document.getElementById("modalTitle"),
-
-  modalDescription:
-    document.getElementById(
-      "modalDescription"
-    ),
-
-  modalGenre:
-    document.getElementById("modalGenre"),
-
-  modalProgress:
-    document.getElementById("modalProgress"),
-
-  modalYear:
-    document.getElementById("modalYear"),
-
-  modalTechnologies:
-    document.getElementById(
-      "modalTechnologies"
-    ),
-
-  modalFeatures:
-    document.getElementById(
-      "modalFeatures"
-    ),
-
-  modalControls:
-    document.getElementById(
-      "modalControls"
-    ),
-
-  modalResponsibilities:
-    document.getElementById(
-      "modalResponsibilities"
-    ),
-
-  modalPlayButton:
-    document.getElementById(
-      "modalPlayButton"
-    ),
-
-  modalRepositoryButton:
-    document.getElementById(
-      "modalRepositoryButton"
-    )
+  modalPlayButton: document.getElementById("modalPlayButton"),
+  modalRepositoryButton: document.getElementById(
+    "modalRepositoryButton"
+  )
 };
 
 let loadedGames = [];
 let lastFocusedElement = null;
+let modalCloseTimer = null;
 
-window.addEventListener(
-  "DOMContentLoaded",
-  initializeStudio
-);
+window.addEventListener("DOMContentLoaded", initializeStudio);
 
 async function initializeStudio() {
   setCurrentYear();
   bindNavigation();
   bindModal();
+  initializeRevealAnimations();
 
   await loadGames();
 }
 
-function setCurrentYear() {
-  if (elements.currentYear) {
-    elements.currentYear.textContent =
-      String(new Date().getFullYear());
-  }
-}
+/* =========================================================
+   基本設定
+   ========================================================= */
 
-function bindNavigation() {
-  if (
-    !elements.menuButton ||
-    !elements.navigation
-  ) {
+function setCurrentYear() {
+  if (!elements.currentYear) {
     return;
   }
 
-  elements.menuButton.addEventListener(
-    "click",
-    () => {
-      const isOpen =
-        elements.navigation.classList.toggle(
-          "is-open"
-        );
-
-      elements.menuButton.classList.toggle(
-        "is-open",
-        isOpen
-      );
-
-      elements.menuButton.setAttribute(
-        "aria-expanded",
-        String(isOpen)
-      );
-    }
+  elements.currentYear.textContent = String(
+    new Date().getFullYear()
   );
+}
+
+function formatProjectNumber(number) {
+  return String(number).padStart(2, "0");
+}
+
+function setText(element, value) {
+  if (!element) {
+    return;
+  }
+
+  element.textContent = String(value ?? "");
+}
+
+/* =========================================================
+   導覽選單
+   ========================================================= */
+
+function bindNavigation() {
+  if (!elements.menuButton || !elements.navigation) {
+    return;
+  }
+
+  elements.menuButton.addEventListener("click", () => {
+    const isOpen = elements.navigation.classList.toggle(
+      "is-open"
+    );
+
+    elements.menuButton.classList.toggle("is-open", isOpen);
+
+    elements.menuButton.setAttribute(
+      "aria-expanded",
+      String(isOpen)
+    );
+  });
 
   elements.navigation
     .querySelectorAll("a")
     .forEach((link) => {
-      link.addEventListener(
-        "click",
-        closeNavigation
-      );
+      link.addEventListener("click", closeNavigation);
     });
 
-  document.addEventListener(
-    "click",
-    (event) => {
-      const clickedNavigation =
-        elements.navigation.contains(
-          event.target
-        );
+  document.addEventListener("click", (event) => {
+    const clickedNavigation =
+      elements.navigation.contains(event.target);
 
-      const clickedButton =
-        elements.menuButton.contains(
-          event.target
-        );
+    const clickedMenuButton =
+      elements.menuButton.contains(event.target);
 
-      if (
-        !clickedNavigation &&
-        !clickedButton
-      ) {
-        closeNavigation();
-      }
+    if (!clickedNavigation && !clickedMenuButton) {
+      closeNavigation();
     }
-  );
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 840) {
+      closeNavigation();
+    }
+  });
 }
 
 function closeNavigation() {
-  if (
-    !elements.menuButton ||
-    !elements.navigation
-  ) {
+  if (!elements.menuButton || !elements.navigation) {
     return;
   }
 
-  elements.navigation.classList.remove(
-    "is-open"
-  );
-
-  elements.menuButton.classList.remove(
-    "is-open"
-  );
+  elements.navigation.classList.remove("is-open");
+  elements.menuButton.classList.remove("is-open");
 
   elements.menuButton.setAttribute(
     "aria-expanded",
@@ -219,102 +178,51 @@ function closeNavigation() {
   );
 }
 
-function bindModal() {
-  if (
-    !elements.modalBackdrop ||
-    !elements.modalClose
-  ) {
-    return;
-  }
-
-  elements.modalClose.addEventListener(
-    "click",
-    closeGameModal
-  );
-
-  elements.modalBackdrop.addEventListener(
-    "click",
-    (event) => {
-      if (
-        event.target ===
-        elements.modalBackdrop
-      ) {
-        closeGameModal();
-      }
-    }
-  );
-
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      if (elements.modalBackdrop.hidden) {
-        return;
-      }
-
-      if (event.key === "Escape") {
-        closeGameModal();
-      }
-
-      if (event.key === "Tab") {
-        trapModalFocus(event);
-      }
-    }
-  );
-}
+/* =========================================================
+   遊戲資料
+   ========================================================= */
 
 async function loadGames() {
   if (!elements.gameGrid) {
     return;
   }
 
-  const results =
-    await Promise.allSettled(
-      GAME_DATA_FILES.map(
-        (filePath) =>
-          loadGameData(filePath)
-      )
-    );
+  const results = await Promise.allSettled(
+    GAME_DATA_FILES.map((filePath) => loadGameData(filePath))
+  );
 
   loadedGames = results
-    .filter(
-      (result) =>
-        result.status === "fulfilled"
-    )
-    .map(
-      (result) => result.value
-    );
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
 
-  const failedResults =
-    results.filter(
-      (result) =>
-        result.status === "rejected"
-    );
+  const failedResults = results.filter(
+    (result) => result.status === "rejected"
+  );
 
   if (loadedGames.length === 0) {
     renderLoadError(failedResults);
     updateGameCount(0);
+    renderUpcomingProjects(0);
 
     return;
   }
 
   renderGameLibrary(loadedGames);
+  renderUpcomingProjects(loadedGames.length);
   updateGameCount(loadedGames.length);
 
   failedResults.forEach((result) => {
     console.error(
-      "遊戲資料載入失敗：",
+      "部分遊戲資料載入失敗：",
       result.reason
     );
   });
 }
 
 async function loadGameData(filePath) {
-  const response = await fetch(
-    filePath,
-    {
-      cache: "no-cache"
-    }
-  );
+  const response = await fetch(filePath, {
+    cache: "no-cache"
+  });
 
   if (!response.ok) {
     throw new Error(
@@ -322,17 +230,14 @@ async function loadGameData(filePath) {
     );
   }
 
-  const game = await response.json();
+  const gameData = await response.json();
 
-  validateGameData(game, filePath);
+  validateGameData(gameData, filePath);
 
-  return game;
+  return gameData;
 }
 
-function validateGameData(
-  game,
-  filePath
-) {
+function validateGameData(gameData, filePath) {
   const requiredFields = [
     "id",
     "title",
@@ -341,10 +246,9 @@ function validateGameData(
     "description"
   ];
 
-  const missingFields =
-    requiredFields.filter(
-      (field) => !game[field]
-    );
+  const missingFields = requiredFields.filter(
+    (field) => !gameData[field]
+  );
 
   if (missingFields.length > 0) {
     throw new Error(
@@ -353,45 +257,51 @@ function validateGameData(
   }
 }
 
-function renderGameLibrary(games) {
-  elements.gameGrid.innerHTML = "";
+function updateGameCount(count) {
+  if (!elements.gameCount) {
+    return;
+  }
 
-  games.forEach(
-    (game, index) => {
-      elements.gameGrid.appendChild(
-        createGameCard(game, index)
-      );
-    }
+  elements.gameCount.textContent = String(count).padStart(
+    2,
+    "0"
   );
 }
 
-function createGameCard(
-  game,
-  index
-) {
-  const article =
-    document.createElement("article");
+/* =========================================================
+   遊戲卡片
+   ========================================================= */
 
-  const theme =
-    getGameTheme(game);
+function renderGameLibrary(games) {
+  elements.gameGrid.innerHTML = "";
 
-  const projectNumber =
-    formatProjectNumber(index + 1);
+  games.forEach((game, index) => {
+    const gameCard = createGameCard(game, index);
 
-  const technologies =
-    normalizeStringArray(
-      game.technologies
-    ).slice(0, 3);
+    elements.gameGrid.appendChild(gameCard);
+  });
+}
 
-  const hasCoverImage =
-    isNonEmptyString(
-      game.coverImage
-    );
+function createGameCard(game, index) {
+  const article = document.createElement("article");
 
-  article.className = "game-card";
+  const theme = getGameTheme(game);
+  const projectNumber = formatProjectNumber(index + 1);
+  const technologies = normalizeStringArray(
+    game.technologies
+  ).slice(0, 3);
 
-  article.dataset.theme =
-    theme.theme;
+  const hasCoverImage = isNonEmptyString(
+    game.coverImage
+  );
+
+  article.className = "game-card reveal-item";
+  article.dataset.theme = theme.theme;
+
+  article.style.setProperty(
+    "--reveal-delay",
+    `${index * 90}ms`
+  );
 
   article.innerHTML = `
     <div class="game-card__artwork">
@@ -399,7 +309,8 @@ function createGameCard(
         class="game-card__visual"
         aria-hidden="true"
       >
-        <span class="game-card__orbit"></span>
+        <span class="game-card__ring game-card__ring--outer"></span>
+        <span class="game-card__ring game-card__ring--inner"></span>
 
         <span class="game-card__monogram">
           ${escapeHTML(theme.monogram)}
@@ -413,8 +324,7 @@ function createGameCard(
               class="game-card__cover"
               src="${escapeAttribute(game.coverImage)}"
               alt="${escapeAttribute(
-                game.coverImageAlt ||
-                game.title
+                game.coverImageAlt || game.title
               )}"
               loading="lazy"
             >
@@ -422,25 +332,44 @@ function createGameCard(
           : ""
       }
 
+      <div class="game-card__shade"></div>
+
       <div class="game-card__topline">
-        <span>
+        <span class="game-card__project-number">
           PROJECT ${projectNumber}
         </span>
 
-        <span class="status-badge">
+        <span class="game-card__status">
           ${escapeHTML(game.status)}
         </span>
       </div>
 
-      <div class="game-card__art-label">
-        ${escapeHTML(theme.label)}
+      <div class="game-card__art-footer">
+        <span>
+          ${escapeHTML(theme.label)}
+        </span>
+      </div>
+
+      <div class="game-card__hover-actions">
+        ${createPlayLink(
+          game.gameUrl,
+          "立即遊玩",
+          "button button--primary"
+        )}
+
+        <button
+          class="button button--glass js-open-details"
+          type="button"
+        >
+          查看詳情
+        </button>
       </div>
     </div>
 
     <div class="game-card__content">
       <div class="game-card__heading">
         <div>
-          <p>
+          <p class="game-card__genre">
             ${escapeHTML(game.genre)}
           </p>
 
@@ -450,16 +379,13 @@ function createGameCard(
         </div>
 
         <span class="game-card__version">
-          ${escapeHTML(
-            game.progress || "DEMO"
-          )}
+          ${escapeHTML(game.progress || "DEMO")}
         </span>
       </div>
 
       <p class="game-card__description">
         ${escapeHTML(
-          game.shortDescription ||
-          game.description
+          game.shortDescription || game.description
         )}
       </p>
 
@@ -470,66 +396,57 @@ function createGameCard(
         ${technologies
           .map(
             (technology) =>
-              `<li>${escapeHTML(
-                technology
-              )}</li>`
+              `<li>${escapeHTML(technology)}</li>`
           )
           .join("")}
       </ul>
 
-      <div class="game-card__actions">
-        ${createPlayLink(
-          game.gameUrl
-        )}
-
+      <div class="game-card__footer">
         <button
-          class="button button--secondary js-project-details"
+          class="text-link js-open-details"
           type="button"
         >
           作品資訊
+          <span aria-hidden="true"></span>
         </button>
+
+        <span class="game-card__year">
+          ${escapeHTML(game.releaseYear || "2026")}
+        </span>
       </div>
     </div>
   `;
 
-  const detailsButton =
-    article.querySelector(
-      ".js-project-details"
-    );
+  article
+    .querySelectorAll(".js-open-details")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        openGameModal(game, index, button);
+      });
+    });
 
-  detailsButton.addEventListener(
-    "click",
-    () => {
-      openGameModal(
-        game,
-        index,
-        detailsButton
-      );
-    }
+  const coverImage = article.querySelector(
+    ".game-card__cover"
   );
 
-  const coverImage =
-    article.querySelector(
-      ".game-card__cover"
-    );
-
   if (coverImage) {
-    coverImage.addEventListener(
-      "error",
-      () => {
-        coverImage.remove();
-      }
-    );
+    coverImage.addEventListener("error", () => {
+      coverImage.remove();
+    });
   }
+
+  requestAnimationFrame(() => {
+    article.classList.add("is-visible");
+  });
 
   return article;
 }
 
-function createPlayLink(gameUrl) {
-  if (!isValidHttpUrl(gameUrl)) {
+function createPlayLink(url, label, className) {
+  if (!isValidHttpUrl(url)) {
     return `
       <button
-        class="button button--primary"
+        class="${escapeAttribute(className)}"
         type="button"
         disabled
       >
@@ -540,22 +457,114 @@ function createPlayLink(gameUrl) {
 
   return `
     <a
-      class="button button--primary"
-      href="${escapeAttribute(gameUrl)}"
+      class="${escapeAttribute(className)}"
+      href="${escapeAttribute(url)}"
       target="_blank"
       rel="noopener noreferrer"
     >
-      開始遊戲
-      <span aria-hidden="true">↗</span>
+      ${escapeHTML(label)}
+      <span class="button__arrow" aria-hidden="true"></span>
     </a>
   `;
 }
 
-function openGameModal(
-  game,
-  index,
-  triggerElement
-) {
+/* =========================================================
+   後續作品
+   ========================================================= */
+
+function renderUpcomingProjects(currentGameCount) {
+  if (!elements.upcomingGrid) {
+    return;
+  }
+
+  elements.upcomingGrid.innerHTML = "";
+
+  for (
+    let index = 1;
+    index <= UPCOMING_PROJECT_COUNT;
+    index += 1
+  ) {
+    const projectNumber =
+      currentGameCount + index;
+
+    const article = document.createElement("article");
+
+    article.className =
+      "upcoming-card reveal-item is-visible";
+
+    article.style.setProperty(
+      "--reveal-delay",
+      `${index * 80}ms`
+    );
+
+    article.innerHTML = `
+      <div class="upcoming-card__number">
+        ${formatProjectNumber(projectNumber)}
+      </div>
+
+      <div
+        class="upcoming-card__visual"
+        aria-hidden="true"
+      >
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="upcoming-card__content">
+        <p>PROJECT SLOT</p>
+        <h3>尚未解鎖</h3>
+        <span>下一款遊戲開發完成後加入</span>
+      </div>
+
+      <div
+        class="upcoming-card__lock"
+        aria-hidden="true"
+      ></div>
+    `;
+
+    elements.upcomingGrid.appendChild(article);
+  }
+}
+
+/* =========================================================
+   Modal
+   ========================================================= */
+
+function bindModal() {
+  if (!elements.modalBackdrop || !elements.modalClose) {
+    return;
+  }
+
+  elements.modalClose.addEventListener(
+    "click",
+    closeGameModal
+  );
+
+  elements.modalBackdrop.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === elements.modalBackdrop) {
+        closeGameModal();
+      }
+    }
+  );
+
+  document.addEventListener("keydown", (event) => {
+    if (elements.modalBackdrop.hidden) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeGameModal();
+    }
+
+    if (event.key === "Tab") {
+      trapModalFocus(event);
+    }
+  });
+}
+
+function openGameModal(game, index, triggerElement) {
   if (
     !elements.modalBackdrop ||
     !elements.modalPanel
@@ -563,43 +572,33 @@ function openGameModal(
     return;
   }
 
-  const theme =
-    getGameTheme(game);
+  if (modalCloseTimer) {
+    window.clearTimeout(modalCloseTimer);
+    modalCloseTimer = null;
+  }
 
-  const projectNumber =
-    formatProjectNumber(index + 1);
+  const theme = getGameTheme(game);
+  const projectNumber = formatProjectNumber(index + 1);
 
   lastFocusedElement =
-    triggerElement ||
-    document.activeElement;
+    triggerElement || document.activeElement;
 
-  elements.modalPanel.dataset.theme =
-    theme.theme;
+  elements.modalPanel.dataset.theme = theme.theme;
 
   setText(
     elements.modalProjectNumber,
     `PROJECT ${projectNumber}`
   );
 
-  setText(
-    elements.modalThemeLabel,
-    theme.label
-  );
-
-  setText(
-    elements.modalMonogram,
-    theme.monogram
-  );
+  setText(elements.modalThemeLabel, theme.label);
+  setText(elements.modalMonogram, theme.monogram);
 
   setText(
     elements.modalStatus,
     game.status || "PROJECT"
   );
 
-  setText(
-    elements.modalTitle,
-    game.title
-  );
+  setText(elements.modalTitle, game.title);
 
   setText(
     elements.modalDescription,
@@ -621,20 +620,19 @@ function openGameModal(
     game.releaseYear || "未設定"
   );
 
-  renderTechnologyList(
-    game.technologies
+  renderTechnologyList(game.technologies);
+  renderSimpleList(
+    elements.modalFeatures,
+    game.features,
+    "作品內容整理中"
   );
 
-  renderFeatureList(
-    game.features
-  );
+  renderControlList(game.controls);
 
-  renderControlList(
-    game.controls
-  );
-
-  renderResponsibilityList(
-    game.responsibilities
+  renderSimpleList(
+    elements.modalResponsibilities,
+    game.responsibilities,
+    "開發內容整理中"
   );
 
   configureModalArtwork(game);
@@ -649,14 +647,34 @@ function openGameModal(
     game.repositoryUrl
   );
 
-  elements.modalBackdrop.hidden =
-    false;
+  elements.modalBackdrop.hidden = false;
 
-  document.body.classList.add(
-    "modal-open"
-  );
+  requestAnimationFrame(() => {
+    elements.modalBackdrop.classList.add("is-open");
+    elements.body.classList.add("modal-open");
+  });
 
   elements.modalClose.focus();
+}
+
+function closeGameModal() {
+  if (!elements.modalBackdrop) {
+    return;
+  }
+
+  elements.modalBackdrop.classList.remove("is-open");
+  elements.body.classList.remove("modal-open");
+
+  modalCloseTimer = window.setTimeout(() => {
+    elements.modalBackdrop.hidden = true;
+
+    if (
+      lastFocusedElement &&
+      typeof lastFocusedElement.focus === "function"
+    ) {
+      lastFocusedElement.focus();
+    }
+  }, 280);
 }
 
 function configureModalArtwork(game) {
@@ -667,192 +685,45 @@ function configureModalArtwork(game) {
     return;
   }
 
-  const hasCoverImage =
-    isNonEmptyString(
-      game.coverImage
-    );
+  const hasCoverImage = isNonEmptyString(
+    game.coverImage
+  );
 
-  elements.modalArtwork
-    .classList
-    .toggle(
-      "has-cover",
-      hasCoverImage
-    );
+  elements.modalArtwork.classList.toggle(
+    "has-cover",
+    hasCoverImage
+  );
 
-  elements.modalCoverImage.hidden =
-    !hasCoverImage;
-
-  elements.modalCoverImage
-    .removeAttribute("src");
-
+  elements.modalCoverImage.hidden = !hasCoverImage;
+  elements.modalCoverImage.removeAttribute("src");
   elements.modalCoverImage.alt = "";
-
-  elements.modalCoverImage.onerror =
-    null;
+  elements.modalCoverImage.onerror = null;
 
   if (!hasCoverImage) {
     return;
   }
 
-  elements.modalCoverImage.src =
-    game.coverImage;
+  elements.modalCoverImage.src = game.coverImage;
 
   elements.modalCoverImage.alt =
     game.coverImageAlt ||
     `${game.title} 遊戲封面`;
 
-  elements.modalCoverImage.onerror =
-    () => {
-      elements.modalCoverImage.hidden =
-        true;
+  elements.modalCoverImage.onerror = () => {
+    elements.modalCoverImage.hidden = true;
 
-      elements.modalArtwork
-        .classList
-        .remove("has-cover");
-    };
-}
-
-function renderTechnologyList(
-  technologies
-) {
-  if (!elements.modalTechnologies) {
-    return;
-  }
-
-  const items =
-    normalizeStringArray(
-      technologies
+    elements.modalArtwork.classList.remove(
+      "has-cover"
     );
-
-  elements.modalTechnologies.innerHTML =
-    "";
-
-  if (items.length === 0) {
-    elements.modalTechnologies.innerHTML =
-      "<li>未設定</li>";
-
-    return;
-  }
-
-  items.forEach((technology) => {
-    const item =
-      document.createElement("li");
-
-    item.textContent =
-      technology;
-
-    elements.modalTechnologies
-      .appendChild(item);
-  });
+  };
 }
 
-function renderFeatureList(features) {
-  renderSimpleList(
-    elements.modalFeatures,
-    features,
-    "作品內容整理中"
-  );
-}
-
-function renderResponsibilityList(
-  responsibilities
-) {
-  renderSimpleList(
-    elements.modalResponsibilities,
-    responsibilities,
-    "開發內容整理中"
-  );
-}
-
-function renderSimpleList(
-  container,
-  values,
-  fallbackText
-) {
-  if (!container) {
-    return;
-  }
-
-  const items =
-    normalizeStringArray(values);
-
-  container.innerHTML = "";
-
-  const safeItems =
-    items.length > 0
-      ? items
-      : [fallbackText];
-
-  safeItems.forEach((value) => {
-    const item =
-      document.createElement("li");
-
-    item.textContent = value;
-
-    container.appendChild(item);
-  });
-}
-
-function renderControlList(controls) {
-  if (!elements.modalControls) {
-    return;
-  }
-
-  elements.modalControls.innerHTML =
-    "";
-
-  if (
-    !Array.isArray(controls) ||
-    controls.length === 0
-  ) {
-    const item =
-      document.createElement("li");
-
-    item.innerHTML =
-      "<span>操作方式整理中</span>";
-
-    elements.modalControls
-      .appendChild(item);
-
-    return;
-  }
-
-  controls.forEach((control) => {
-    const item =
-      document.createElement("li");
-
-    const key =
-      document.createElement("kbd");
-
-    const action =
-      document.createElement("span");
-
-    key.textContent =
-      control?.key || "—";
-
-    action.textContent =
-      control?.action || "未設定";
-
-    item.append(
-      key,
-      action
-    );
-
-    elements.modalControls
-      .appendChild(item);
-  });
-}
-
-function configureModalLink(
-  element,
-  url
-) {
+function configureModalLink(element, url) {
   if (!element) {
     return;
   }
 
-  const isAvailable =
-    isValidHttpUrl(url);
+  const isAvailable = isValidHttpUrl(url);
 
   element.classList.toggle(
     "is-disabled",
@@ -867,44 +738,19 @@ function configureModalLink(
   if (isAvailable) {
     element.href = url;
     element.target = "_blank";
-    element.rel =
-      "noopener noreferrer";
-
+    element.rel = "noopener noreferrer";
     element.onclick = null;
 
     return;
   }
 
   element.href = "#";
-
   element.removeAttribute("target");
   element.removeAttribute("rel");
 
-  element.onclick =
-    (event) => {
-      event.preventDefault();
-    };
-}
-
-function closeGameModal() {
-  if (!elements.modalBackdrop) {
-    return;
-  }
-
-  elements.modalBackdrop.hidden =
-    true;
-
-  document.body.classList.remove(
-    "modal-open"
-  );
-
-  if (
-    lastFocusedElement &&
-    typeof lastFocusedElement.focus ===
-      "function"
-  ) {
-    lastFocusedElement.focus();
-  }
+  element.onclick = (event) => {
+    event.preventDefault();
+  };
 }
 
 function trapModalFocus(event) {
@@ -912,57 +758,177 @@ function trapModalFocus(event) {
     return;
   }
 
-  const focusableElements =
-    Array.from(
-      elements.modalPanel.querySelectorAll(
-        'a[href]:not(.is-disabled), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+  const focusableElements = Array.from(
+    elements.modalPanel.querySelectorAll(
+      'a[href]:not(.is-disabled), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+  );
 
-  if (
-    focusableElements.length === 0
-  ) {
+  if (focusableElements.length === 0) {
     return;
   }
 
-  const firstElement =
-    focusableElements[0];
+  const firstElement = focusableElements[0];
 
   const lastElement =
-    focusableElements[
-      focusableElements.length - 1
-    ];
+    focusableElements[focusableElements.length - 1];
 
   if (
     event.shiftKey &&
-    document.activeElement ===
-      firstElement
+    document.activeElement === firstElement
   ) {
     event.preventDefault();
-
     lastElement.focus();
-  } else if (
+
+    return;
+  }
+
+  if (
     !event.shiftKey &&
-    document.activeElement ===
-      lastElement
+    document.activeElement === lastElement
   ) {
     event.preventDefault();
-
     firstElement.focus();
   }
 }
 
-function renderLoadError(
-  failedResults
+/* =========================================================
+   Modal 清單
+   ========================================================= */
+
+function renderTechnologyList(technologies) {
+  if (!elements.modalTechnologies) {
+    return;
+  }
+
+  const items = normalizeStringArray(technologies);
+
+  elements.modalTechnologies.innerHTML = "";
+
+  const safeItems =
+    items.length > 0 ? items : ["未設定"];
+
+  safeItems.forEach((technology) => {
+    const item = document.createElement("li");
+
+    item.textContent = technology;
+
+    elements.modalTechnologies.appendChild(item);
+  });
+}
+
+function renderSimpleList(
+  container,
+  values,
+  fallbackText
 ) {
-  const errorMessage =
-    failedResults
-      .map(
-        (result) =>
-          result.reason?.message
-      )
-      .filter(Boolean)
-      .join("；");
+  if (!container) {
+    return;
+  }
+
+  const items = normalizeStringArray(values);
+
+  container.innerHTML = "";
+
+  const safeItems =
+    items.length > 0 ? items : [fallbackText];
+
+  safeItems.forEach((value) => {
+    const item = document.createElement("li");
+
+    item.textContent = value;
+
+    container.appendChild(item);
+  });
+}
+
+function renderControlList(controls) {
+  if (!elements.modalControls) {
+    return;
+  }
+
+  elements.modalControls.innerHTML = "";
+
+  if (
+    !Array.isArray(controls) ||
+    controls.length === 0
+  ) {
+    const item = document.createElement("li");
+
+    item.innerHTML =
+      "<span>操作方式整理中</span>";
+
+    elements.modalControls.appendChild(item);
+
+    return;
+  }
+
+  controls.forEach((control) => {
+    const item = document.createElement("li");
+    const key = document.createElement("kbd");
+    const action = document.createElement("span");
+
+    key.textContent = control?.key || "—";
+    action.textContent = control?.action || "未設定";
+
+    item.append(key, action);
+
+    elements.modalControls.appendChild(item);
+  });
+}
+
+/* =========================================================
+   進場動畫
+   ========================================================= */
+
+function initializeRevealAnimations() {
+  const revealElements = document.querySelectorAll(
+    "[data-reveal]"
+  );
+
+  if (
+    !("IntersectionObserver" in window) ||
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches
+  ) {
+    revealElements.forEach((element) => {
+      element.classList.add("is-visible");
+    });
+
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    {
+      threshold: 0.12
+    }
+  );
+
+  revealElements.forEach((element) => {
+    observer.observe(element);
+  });
+}
+
+/* =========================================================
+   錯誤畫面
+   ========================================================= */
+
+function renderLoadError(failedResults) {
+  const errorMessage = failedResults
+    .map((result) => result.reason?.message)
+    .filter(Boolean)
+    .join("；");
 
   elements.gameGrid.innerHTML = `
     <article class="load-error">
@@ -975,79 +941,54 @@ function renderLoadError(
       </h2>
 
       <p>
-        請確認 JSON 檔案名稱、
-        路徑與格式是否正確。
+        請確認 JSON 檔案名稱、路徑與格式。
       </p>
 
       <code>
-        ${escapeHTML(
-          errorMessage ||
-          "未知錯誤"
-        )}
+        ${escapeHTML(errorMessage || "未知錯誤")}
       </code>
     </article>
   `;
 }
 
-function updateGameCount(count) {
-  if (elements.gameCount) {
-    elements.gameCount.textContent =
-      String(count).padStart(2, "0");
-  }
-}
+/* =========================================================
+   工具函式
+   ========================================================= */
 
 function getGameTheme(game) {
   return (
     GAME_THEMES[game.id] || {
       theme: "default",
       label: "INDEPENDENT PROJECT",
-      monogram:
-        getMonogram(game.title)
+      monogram: getMonogram(game.title)
     }
   );
 }
 
 function getMonogram(title) {
-  const normalizedTitle =
-    String(title || "GAME").trim();
+  const normalizedTitle = String(
+    title || "GAME"
+  ).trim();
 
-  const words =
-    normalizedTitle
-      .split(/\s+/)
-      .filter(Boolean);
+  const words = normalizedTitle
+    .split(/\s+/)
+    .filter(Boolean);
 
   if (words.length >= 2) {
-    return (
-      `${words[0][0]}${words[1][0]}`
-    ).toUpperCase();
+    return `${words[0][0]}${words[1][0]}`.toUpperCase();
   }
 
-  return normalizedTitle
-    .slice(0, 2)
-    .toUpperCase();
+  return normalizedTitle.slice(0, 2).toUpperCase();
 }
 
-function formatProjectNumber(
-  number
-) {
-  return String(number).padStart(
-    2,
-    "0"
-  );
-}
-
-function normalizeStringArray(
-  value
-) {
+function normalizeStringArray(value) {
   if (!Array.isArray(value)) {
     return [];
   }
 
   return value
     .filter(isNonEmptyString)
-    .map(
-      (item) => item.trim()
-    );
+    .map((item) => item.trim());
 }
 
 function isNonEmptyString(value) {
@@ -1071,16 +1012,6 @@ function isValidHttpUrl(value) {
     );
   } catch {
     return false;
-  }
-}
-
-function setText(
-  element,
-  value
-) {
-  if (element) {
-    element.textContent =
-      String(value ?? "");
   }
 }
 
