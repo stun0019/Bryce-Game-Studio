@@ -164,8 +164,8 @@ function renderGameLobby(games) {
 
   gameGrid.innerHTML = "";
 
-  games.forEach((game, index) => {
-    const gameCard = createGameCard(game, index);
+  games.forEach((game) => {
+    const gameCard = createGameCard(game);
     gameGrid.appendChild(gameCard);
   });
 
@@ -180,13 +180,10 @@ function renderGameLobby(games) {
   }
 }
 
-function createGameCard(game, index) {
+function createGameCard(game) {
   const article = document.createElement("article");
 
-  article.className =
-    index === 0
-      ? "game-card featured"
-      : "game-card";
+  article.className = "game-card";
 
   const hasCoverImage =
     typeof game.coverImage === "string" &&
@@ -383,9 +380,12 @@ function openGameModal(game, triggerElement) {
 }
 
 function configureModalImage(game) {
-  if (!modalImage) {
+  if (!modalImage || !gameModal) {
     return;
   }
+
+  const modalContainer =
+    gameModal.querySelector(".game-modal");
 
   const hasCoverImage =
     typeof game.coverImage === "string" &&
@@ -395,7 +395,16 @@ function configureModalImage(game) {
     modalImage.removeAttribute("src");
     modalImage.alt = "";
     modalImage.style.display = "none";
+
+    if (modalContainer) {
+      modalContainer.classList.add("no-cover");
+    }
+
     return;
+  }
+
+  if (modalContainer) {
+    modalContainer.classList.remove("no-cover");
   }
 
   modalImage.src = game.coverImage;
@@ -408,6 +417,10 @@ function configureModalImage(game) {
     modalImage.removeAttribute("src");
     modalImage.alt = "";
     modalImage.style.display = "none";
+
+    if (modalContainer) {
+      modalContainer.classList.add("no-cover");
+    }
   };
 }
 
@@ -453,46 +466,40 @@ function configureModalLink(element, url, label) {
   }
 
   element.textContent = label;
-
-  const newElement = element.cloneNode(true);
-  element.replaceWith(newElement);
-
-  if (element === modalPlayButton) {
-    window.modalPlayButton = newElement;
-  }
-
-  if (element === modalRepositoryButton) {
-    window.modalRepositoryButton = newElement;
-  }
+  element.onclick = null;
 
   if (isValidUrl(url)) {
-    newElement.href = url;
-    newElement.target = "_blank";
-    newElement.rel = "noopener noreferrer";
+    element.href = url;
+    element.target = "_blank";
+    element.rel = "noopener noreferrer";
 
-    newElement.removeAttribute("aria-disabled");
-    newElement.classList.remove("disabled");
+    element.removeAttribute("aria-disabled");
+    element.classList.remove("disabled");
 
     return;
   }
 
-  newElement.href = "#";
-  newElement.setAttribute("aria-disabled", "true");
-  newElement.classList.add("disabled");
+  element.href = "#";
+  element.removeAttribute("target");
+  element.removeAttribute("rel");
 
-  newElement.addEventListener("click", (event) => {
+  element.setAttribute("aria-disabled", "true");
+  element.classList.add("disabled");
+
+  element.onclick = (event) => {
     event.preventDefault();
-  });
+  };
 }
 
 function replaceBrokenImage(image, title) {
   const placeholder = document.createElement("div");
 
   placeholder.className = "game-cover-placeholder";
-  placeholder.innerHTML = `
-    <span>${escapeHTML(title)}</span>
-  `;
 
+  const titleElement = document.createElement("span");
+  titleElement.textContent = title;
+
+  placeholder.appendChild(titleElement);
   image.replaceWith(placeholder);
 }
 
