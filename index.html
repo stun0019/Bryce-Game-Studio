@@ -10,7 +10,7 @@
 
   <meta
     name="description"
-    content="Bryce Game Studio 個人遊戲作品集，收錄 Hooded Escape、魔法の五目並べ、灶腳大亂鬥與後續遊戲 Demo。"
+    content="Bryce Game Studio 個人遊戲作品集，收錄 Hooded Escape、魔法の五目並べ、灶咖大亂鬥與後續遊戲 Demo。"
   >
 
   <meta
@@ -28,339 +28,440 @@
   >
 </head>
 
-<body>
+<body class="is-loading">
   <div
-    class="page-background"
-    aria-hidden="true"
+    class="studio-loader"
+    id="studioLoader"
+    role="status"
+    aria-live="polite"
+    aria-label="Bryce Game Studio 載入中"
   >
-    <span
-      class="page-background__glow page-background__glow--left"
-    ></span>
+    <div
+      class="studio-loader__ambient"
+      aria-hidden="true"
+    ></div>
 
-    <span
-      class="page-background__glow page-background__glow--right"
-    ></span>
-
-    <span
-      class="page-background__grid"
-    ></span>
-  </div>
-
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a
-        class="studio-brand"
-        href="#home"
-        aria-label="返回 Bryce Game Studio 首頁"
-      >
+    <div class="studio-loader__content">
+      <div class="studio-loader__brand">
         <span
-          class="studio-brand__mark"
+          class="studio-loader__mark"
           aria-hidden="true"
         >
           B
         </span>
 
-        <span class="studio-brand__text">
-          <strong>
+        <div>
+          <p>
             BRYCE GAME STUDIO
-          </strong>
-
-          <small>
-            INDEPENDENT GAME PORTFOLIO
-          </small>
-        </span>
-      </a>
-
-      <button
-        class="menu-button"
-        id="menuButton"
-        type="button"
-        aria-label="開啟導覽選單"
-        aria-controls="mainNavigation"
-        aria-expanded="false"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav
-        class="main-navigation"
-        id="mainNavigation"
-        aria-label="主要導覽"
-      >
-        <a href="#games">
-          遊戲作品
-        </a>
-
-        <a href="#upcoming">
-          開發計畫
-        </a>
-
-        <a href="#about">
-          關於我
-        </a>
-
-        <a
-          class="main-navigation__github"
-          href="https://github.com/stun0019"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <section
-      class="hero-section section-shell"
-      id="home"
-    >
-      <div
-        class="hero-section__content"
-        data-reveal
-      >
-        <p class="section-label">
-          PLAYABLE PROJECT ARCHIVE
-        </p>
-
-        <h1>
-          選擇遊戲，
-          <span>
-            直接開始體驗。
-          </span>
-        </h1>
-
-        <p class="hero-section__description">
-          Bryce Game Studio 是我的互動式遊戲作品集，
-          集中收錄可遊玩的網頁遊戲 Demo、
-          開發內容與原始碼。
-        </p>
-      </div>
-
-      <aside
-        class="hero-status"
-        aria-label="目前作品集狀態"
-        data-reveal
-        style="--reveal-delay: 120ms;"
-      >
-        <div class="hero-status__online">
-          PORTFOLIO ONLINE
-        </div>
-
-        <div class="hero-status__count">
-          <strong id="gameCount">
-            00
-          </strong>
-
-          <span>
-            PLAYABLE PROJECTS
-          </span>
-        </div>
-
-        <p class="hero-status__technology">
-          HTML5 · CSS3 · JavaScript
-        </p>
-      </aside>
-    </section>
-
-    <section
-      class="games-section section-shell"
-      id="games"
-      aria-labelledby="gamesTitle"
-    >
-      <div
-        class="section-heading"
-        data-reveal
-      >
-        <div>
-          <p class="section-label">
-            GAME LIBRARY
           </p>
 
-          <h2 id="gamesTitle">
-            遊戲作品
-          </h2>
+          <span>
+            INITIALIZING GAME LIBRARY
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="studio-loader__progress"
+        id="loaderProgressPanel"
+      >
+        <div class="studio-loader__progress-head">
+          <span>
+            LOADING
+          </span>
+
+          <strong id="loaderPercent">
+            0%
+          </strong>
         </div>
 
-        <p>
-          選擇作品進入可遊玩 Demo，
-          或查看遊戲內容、操作方式與個人負責項目。
-        </p>
-      </div>
-
-      <div
-        class="game-grid"
-        id="gameGrid"
-        aria-live="polite"
-      >
-        <article
-          class="game-skeleton"
-          aria-label="正在載入遊戲資料"
+        <div
+          class="studio-loader__track"
+          id="loaderProgressbar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
         >
-          <div
-            class="game-skeleton__art"
-          ></div>
-
-          <div
-            class="game-skeleton__line game-skeleton__line--short"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-        </article>
-
-        <article
-          class="game-skeleton"
-          aria-hidden="true"
-        >
-          <div
-            class="game-skeleton__art"
-          ></div>
-
-          <div
-            class="game-skeleton__line game-skeleton__line--short"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-        </article>
-
-        <article
-          class="game-skeleton"
-          aria-hidden="true"
-        >
-          <div
-            class="game-skeleton__art"
-          ></div>
-
-          <div
-            class="game-skeleton__line game-skeleton__line--short"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-
-          <div
-            class="game-skeleton__line"
-          ></div>
-        </article>
-      </div>
-    </section>
-
-    <section
-      class="upcoming-section section-shell"
-      id="upcoming"
-      aria-labelledby="upcomingTitle"
-    >
-      <div
-        class="section-heading"
-        data-reveal
-      >
-        <div>
-          <p class="section-label">
-            NEXT IN DEVELOPMENT
-          </p>
-
-          <h2 id="upcomingTitle">
-            後續作品
-          </h2>
-        </div>
-
-        <p>
-          新 Demo 完成後會自動依序加入遊戲大廳，
-          並提供可遊玩版本與開發資訊。
-        </p>
-      </div>
-
-      <div
-        class="upcoming-grid"
-        id="upcomingGrid"
-      ></div>
-    </section>
-
-    <section
-      class="about-section section-shell"
-      id="about"
-      aria-labelledby="aboutTitle"
-    >
-      <div
-        class="about-panel"
-        data-reveal
-      >
-        <div class="about-panel__identity">
           <span
-            class="about-panel__avatar"
+            class="studio-loader__bar"
+            id="loaderBar"
+          ></span>
+        </div>
+      </div>
+
+      <p
+        class="studio-loader__welcome"
+        id="loaderWelcome"
+        aria-hidden="true"
+      >
+        歡迎遊玩
+      </p>
+    </div>
+  </div>
+
+  <div
+    class="site-content"
+    id="siteContent"
+  >
+    <div
+      class="page-background"
+      aria-hidden="true"
+    >
+      <span
+        class="page-background__glow page-background__glow--left"
+      ></span>
+
+      <span
+        class="page-background__glow page-background__glow--right"
+      ></span>
+
+      <span
+        class="page-background__grid"
+      ></span>
+    </div>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a
+          class="studio-brand"
+          href="#home"
+          aria-label="返回 Bryce Game Studio 首頁"
+        >
+          <span
+            class="studio-brand__mark"
             aria-hidden="true"
           >
             B
           </span>
 
+          <span class="studio-brand__text">
+            <strong>
+              BRYCE GAME STUDIO
+            </strong>
+
+            <small>
+              INDEPENDENT GAME PORTFOLIO
+            </small>
+          </span>
+        </a>
+
+        <button
+          class="menu-button"
+          id="menuButton"
+          type="button"
+          aria-label="開啟導覽選單"
+          aria-controls="mainNavigation"
+          aria-expanded="false"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav
+          class="main-navigation"
+          id="mainNavigation"
+          aria-label="主要導覽"
+        >
+          <a href="#games">
+            遊戲作品
+          </a>
+
+          <a href="#upcoming">
+            開發計畫
+          </a>
+
+          <a href="#about">
+            關於我
+          </a>
+
+          <a
+            class="main-navigation__github"
+            href="https://github.com/stun0019"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section
+        class="hero-section section-shell"
+        id="home"
+      >
+        <div
+          class="hero-section__content"
+          data-reveal
+        >
+          <p class="section-label">
+            PLAYABLE PROJECT ARCHIVE
+          </p>
+
+          <h1>
+            選擇遊戲，
+
+            <span>
+              直接開始體驗。
+            </span>
+          </h1>
+
+          <p class="hero-section__description">
+            Bryce Game Studio 是我的互動式遊戲作品集，
+            集中收錄可遊玩的網頁遊戲 Demo、
+            開發內容與原始碼。
+          </p>
+        </div>
+
+        <aside
+          class="hero-status"
+          aria-label="目前作品集狀態"
+          data-reveal
+          style="--reveal-delay: 120ms;"
+        >
+          <div class="hero-status__online">
+            PORTFOLIO ONLINE
+          </div>
+
+          <div class="hero-status__count">
+            <strong id="gameCount">
+              00
+            </strong>
+
+            <span>
+              PLAYABLE PROJECTS
+            </span>
+          </div>
+
+          <p class="hero-status__technology">
+            HTML5 · CSS3 · JavaScript
+          </p>
+        </aside>
+      </section>
+
+      <section
+        class="games-section section-shell"
+        id="games"
+        aria-labelledby="gamesTitle"
+      >
+        <div
+          class="section-heading"
+          data-reveal
+        >
           <div>
             <p class="section-label">
-              DEVELOPER PROFILE
+              GAME LIBRARY
             </p>
 
-            <h2 id="aboutTitle">
-              Bryce
+            <h2 id="gamesTitle">
+              遊戲作品
             </h2>
-
-            <p>
-              以小型、可遊玩且具完整流程的 Demo
-              累積遊戲開發作品，持續練習角色控制、
-              遊戲邏輯、AI、UI 與響應式設計。
-            </p>
           </div>
+
+          <p>
+            點擊中央作品卡片直接進入遊戲，
+            或點擊「作品資訊」查看內容、
+            操作方式與個人負責項目。
+          </p>
         </div>
 
         <div
-          class="about-panel__skills"
-          aria-label="目前使用技術"
+          class="game-grid"
+          id="gameGrid"
+          aria-live="polite"
         >
-          <span>HTML5</span>
-          <span>CSS3</span>
-          <span>JavaScript</span>
-          <span>Game UI</span>
-          <span>2D Animation</span>
-          <span>GitHub Pages</span>
+          <article
+            class="game-skeleton"
+            aria-label="正在載入遊戲資料"
+          >
+            <div
+              class="game-skeleton__art"
+            ></div>
+
+            <div
+              class="game-skeleton__line game-skeleton__line--short"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+          </article>
+
+          <article
+            class="game-skeleton"
+            aria-hidden="true"
+          >
+            <div
+              class="game-skeleton__art"
+            ></div>
+
+            <div
+              class="game-skeleton__line game-skeleton__line--short"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+          </article>
+
+          <article
+            class="game-skeleton"
+            aria-hidden="true"
+          >
+            <div
+              class="game-skeleton__art"
+            ></div>
+
+            <div
+              class="game-skeleton__line game-skeleton__line--short"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+
+            <div
+              class="game-skeleton__line"
+            ></div>
+          </article>
         </div>
 
-        <a
-          class="profile-link"
-          href="https://github.com/stun0019"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
+          class="carousel-dots"
+          id="carouselDots"
+          aria-label="遊戲輪播位置"
+        ></div>
+      </section>
+
+      <section
+        class="upcoming-section section-shell"
+        id="upcoming"
+        aria-labelledby="upcomingTitle"
+      >
+        <div
+          class="section-heading"
+          data-reveal
         >
-          查看 GitHub
-        </a>
-      </div>
-    </section>
-  </main>
+          <div>
+            <p class="section-label">
+              NEXT IN DEVELOPMENT
+            </p>
 
-  <footer class="site-footer section-shell">
-    <p>
-      ©
-      <span id="currentYear"></span>
-      Bryce Game Studio
-    </p>
+            <h2 id="upcomingTitle">
+              後續作品
+            </h2>
+          </div>
 
-    <p>
-      Designed and developed by Bryce.
-    </p>
-  </footer>
+          <p>
+            新 Demo 完成後會依序加入遊戲大廳，
+            並提供可遊玩版本與開發資訊。
+          </p>
+        </div>
+
+        <div
+          class="upcoming-grid"
+          id="upcomingGrid"
+        ></div>
+      </section>
+
+      <section
+        class="about-section section-shell"
+        id="about"
+        aria-labelledby="aboutTitle"
+      >
+        <div
+          class="about-panel"
+          data-reveal
+        >
+          <div class="about-panel__identity">
+            <span
+              class="about-panel__avatar"
+              aria-hidden="true"
+            >
+              B
+            </span>
+
+            <div>
+              <p class="section-label">
+                DEVELOPER PROFILE
+              </p>
+
+              <h2 id="aboutTitle">
+                Bryce
+              </h2>
+
+              <p>
+                以小型、可遊玩且具完整流程的 Demo
+                累積遊戲開發作品，持續練習角色控制、
+                遊戲邏輯、AI、UI 與響應式設計。
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="about-panel__skills"
+            aria-label="目前使用技術"
+          >
+            <span>
+              HTML5
+            </span>
+
+            <span>
+              CSS3
+            </span>
+
+            <span>
+              JavaScript
+            </span>
+
+            <span>
+              Game UI
+            </span>
+
+            <span>
+              2D Animation
+            </span>
+
+            <span>
+              GitHub Pages
+            </span>
+          </div>
+
+          <a
+            class="profile-link"
+            href="https://github.com/stun0019"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            查看 GitHub
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <p>
+        ©
+        <span id="currentYear"></span>
+        Bryce Game Studio
+      </p>
+
+      <p>
+        Designed and developed by Bryce.
+      </p>
+    </footer>
+  </div>
 
   <div
     class="modal-backdrop"
@@ -524,6 +625,7 @@
             rel="noopener noreferrer"
           >
             開始遊戲
+
             <span
               class="button__arrow"
               aria-hidden="true"
@@ -538,6 +640,7 @@
             rel="noopener noreferrer"
           >
             查看原始碼
+
             <span
               class="button__arrow"
               aria-hidden="true"
