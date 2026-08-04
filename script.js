@@ -2,7 +2,8 @@
 
 /* =========================================================
    Bryce Game Studio
-   Game Lobby V0.4
+   Game Lobby V0.5
+   Infinite Mobile Coverflow
    ========================================================= */
 
 const GAME_DATA_FILES = [
@@ -16,6 +17,8 @@ const UPCOMING_PROJECT_COUNT = 3;
 const MOBILE_CAROUSEL_BREAKPOINT = 650;
 const MOBILE_CAROUSEL_INTERVAL = 4200;
 const MOBILE_CAROUSEL_RESUME_DELAY = 5500;
+const MOBILE_CAROUSEL_SETTLE_DELAY = 150;
+const MOBILE_CAROUSEL_ANIMATION_TIME = 520;
 
 const GAME_THEMES = {
   "hooded-escape": {
@@ -56,18 +59,30 @@ const elements = {
   modalArtwork: document.getElementById("modalArtwork"),
   modalCoverImage: document.getElementById("modalCoverImage"),
   modalMonogram: document.getElementById("modalMonogram"),
-  modalProjectNumber: document.getElementById("modalProjectNumber"),
-  modalThemeLabel: document.getElementById("modalThemeLabel"),
+
+  modalProjectNumber: document.getElementById(
+    "modalProjectNumber"
+  ),
+
+  modalThemeLabel: document.getElementById(
+    "modalThemeLabel"
+  ),
 
   modalStatus: document.getElementById("modalStatus"),
   modalTitle: document.getElementById("modalTitle"),
-  modalDescription: document.getElementById("modalDescription"),
+
+  modalDescription: document.getElementById(
+    "modalDescription"
+  ),
 
   modalGenre: document.getElementById("modalGenre"),
   modalProgress: document.getElementById("modalProgress"),
   modalYear: document.getElementById("modalYear"),
 
-  modalTechnologies: document.getElementById("modalTechnologies"),
+  modalTechnologies: document.getElementById(
+    "modalTechnologies"
+  ),
+
   modalFeatures: document.getElementById("modalFeatures"),
   modalControls: document.getElementById("modalControls"),
 
@@ -75,7 +90,9 @@ const elements = {
     "modalResponsibilities"
   ),
 
-  modalPlayButton: document.getElementById("modalPlayButton"),
+  modalPlayButton: document.getElementById(
+    "modalPlayButton"
+  ),
 
   modalRepositoryButton: document.getElementById(
     "modalRepositoryButton"
@@ -86,13 +103,19 @@ let loadedGames = [];
 let lastFocusedElement = null;
 let modalCloseTimer = null;
 
-let mobileCarouselIndex = 0;
 let mobileCarouselTimer = null;
 let mobileCarouselResumeTimer = null;
 let mobileCarouselScrollTimer = null;
+let mobileCarouselAnimationTimer = null;
+
 let mobileCarouselBound = false;
 let mobileCarouselPointerDown = false;
-let mobileCarouselProgrammaticScroll = false;
+let mobileCarouselDragging = false;
+let mobileCarouselIsAnimating = false;
+let mobileCarouselPrepared = false;
+
+let mobileCarouselPointerStartX = 0;
+let mobileCarouselPointerStartY = 0;
 
 window.addEventListener(
   "DOMContentLoaded",
@@ -107,10 +130,6 @@ async function initializeStudio() {
 
   await loadGames();
 }
-
-/* =========================================================
-   基本設定
-   ========================================================= */
 
 function setCurrentYear() {
   if (!elements.currentYear) {
@@ -133,10 +152,6 @@ function setText(element, value) {
 
   element.textContent = String(value ?? "");
 }
-
-/* =========================================================
-   導覽選單
-   ========================================================= */
 
 function bindNavigation() {
   if (!elements.menuButton || !elements.navigation) {
@@ -200,10 +215,6 @@ function closeNavigation() {
     "false"
   );
 }
-
-/* =========================================================
-   遊戲資料
-   ========================================================= */
 
 async function loadGames() {
   if (!elements.gameGrid) {
@@ -293,17 +304,11 @@ function updateGameCount(count) {
   );
 }
 
-/* =========================================================
-   遊戲卡片
-   ========================================================= */
-
 function renderGameLibrary(games) {
   elements.gameGrid.innerHTML = "";
 
   games.forEach((game, index) => {
     const gameCard = createGameCard(game, index);
-
-    gameCard.dataset.carouselIndex = String(index);
 
     elements.gameGrid.appendChild(gameCard);
   });
@@ -325,13 +330,34 @@ function createGameCard(game, index) {
     game.coverImage
   );
 
+  const hasGameUrl = isValidHttpUrl(
+    game.gameUrl
+  );
+
+  let pointerStartX = 0;
+  let pointerStartY = 0;
+  let pointerMoved = false;
+
   article.className = "game-card reveal-item";
   article.dataset.theme = theme.theme;
+  article.dataset.gameIndex = String(index);
 
   article.style.setProperty(
     "--reveal-delay",
     `${index * 90}ms`
   );
+
+  if (hasGameUrl) {
+    article.classList.add("is-playable");
+
+    article.setAttribute("role", "link");
+    article.setAttribute("tabindex", "0");
+
+    article.setAttribute(
+      "aria-label",
+      `進入遊戲：${game.title}`
+    );
+  }
 
   article.innerHTML = `
     <div class="game-card__artwork">
@@ -391,7 +417,7 @@ function createGameCard(game, index) {
           class="button button--glass js-open-details"
           type="button"
         >
-          查看詳情
+          作品資訊
         </button>
       </div>
     </div>
@@ -450,10 +476,117 @@ function createGameCard(game, index) {
   article
     .querySelectorAll(".js-open-details")
     .forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
         openGameModal(game, index, button);
       });
     });
+
+  article
+    .querySelectorAll("a, button")
+    .forEach((interactiveElement) => {
+      interactiveElement.addEventListener(
+        "pointerdown",
+        (event) => {
+          event.stopPropagation();
+        }
+      );
+
+      interactiveElement.addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation();
+        }
+      );
+    });
+
+  article.addEventListener(
+    "pointerdown",
+    (event) => {
+      pointerStartX = event.clientX;
+      pointerStartY = event.clientY;
+      pointerMoved = false;
+    }
+  );
+
+  article.addEventListener(
+    "pointermove",
+    (event) => {
+      const movementX = Math.abs(
+        event.clientX - pointerStartX
+      );
+
+      const movementY = Math.abs(
+        event.clientY - pointerStartY
+      );
+
+      if (movementX > 10 || movementY > 10) {
+        pointerMoved = true;
+      }
+    }
+  );
+
+  article.addEventListener("click", (event) => {
+    if (!hasGameUrl) {
+      return;
+    }
+
+    if (pointerMoved || mobileCarouselDragging) {
+      pointerMoved = false;
+
+      return;
+    }
+
+    if (event.target.closest("a, button")) {
+      return;
+    }
+
+    if (
+      isMobileCarouselMode() &&
+      !article.classList.contains(
+        "is-carousel-active"
+      )
+    ) {
+      return;
+    }
+
+    window.location.href = game.gameUrl;
+  });
+
+  article.addEventListener(
+    "keydown",
+    (event) => {
+      if (!hasGameUrl) {
+        return;
+      }
+
+      if (event.target !== article) {
+        return;
+      }
+
+      if (
+        event.key !== "Enter" &&
+        event.key !== " "
+      ) {
+        return;
+      }
+
+      if (
+        isMobileCarouselMode() &&
+        !article.classList.contains(
+          "is-carousel-active"
+        )
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      window.location.href = game.gameUrl;
+    }
+  );
 
   const coverImage = article.querySelector(
     ".game-card__cover"
@@ -493,32 +626,20 @@ function createPlayLink(url, label, className) {
       rel="noopener noreferrer"
     >
       ${escapeHTML(label)}
-      <span class="button__arrow" aria-hidden="true"></span>
+      <span
+        class="button__arrow"
+        aria-hidden="true"
+      ></span>
     </a>
   `;
 }
-
-/* =========================================================
-   手機 Coverflow 輪播
-   ========================================================= */
 
 function initializeMobileCarousel() {
   if (!elements.gameGrid) {
     return;
   }
 
-  stopMobileCarousel();
-
-  const cards = getMobileCarouselCards();
-
-  if (cards.length === 0) {
-    return;
-  }
-
-  mobileCarouselIndex = Math.min(
-    mobileCarouselIndex,
-    cards.length - 1
-  );
+  clearMobileCarouselTimers();
 
   if (!mobileCarouselBound) {
     bindMobileCarouselEvents();
@@ -526,27 +647,24 @@ function initializeMobileCarousel() {
   }
 
   if (!isMobileCarouselMode()) {
+    restoreOriginalCardOrder();
     resetMobileCarouselState();
+
+    mobileCarouselPrepared = false;
 
     return;
   }
 
-  requestAnimationFrame(() => {
-    scrollToMobileCarouselCard(
-      mobileCarouselIndex,
-      false
-    );
+  prepareInfiniteCarousel();
 
+  requestAnimationFrame(() => {
+    centerMiddleCarouselCard(false);
     updateMobileCarouselState();
     startMobileCarousel();
   });
 }
 
 function bindMobileCarouselEvents() {
-  if (!elements.gameGrid) {
-    return;
-  }
-
   elements.gameGrid.addEventListener(
     "scroll",
     handleMobileCarouselScroll,
@@ -557,51 +675,27 @@ function bindMobileCarouselEvents() {
 
   elements.gameGrid.addEventListener(
     "pointerdown",
-    () => {
-      if (!isMobileCarouselMode()) {
-        return;
-      }
+    handleCarouselPointerDown
+  );
 
-      mobileCarouselPointerDown = true;
-      mobileCarouselProgrammaticScroll = false;
-
-      pauseMobileCarousel();
-    }
+  elements.gameGrid.addEventListener(
+    "pointermove",
+    handleCarouselPointerMove
   );
 
   elements.gameGrid.addEventListener(
     "pointerup",
-    () => {
-      if (!isMobileCarouselMode()) {
-        return;
-      }
-
-      mobileCarouselPointerDown = false;
-
-      settleMobileCarousel();
-    }
+    handleCarouselPointerEnd
   );
 
   elements.gameGrid.addEventListener(
     "pointercancel",
-    () => {
-      mobileCarouselPointerDown = false;
-
-      settleMobileCarousel();
-    }
+    handleCarouselPointerEnd
   );
 
   elements.gameGrid.addEventListener(
     "touchstart",
-    () => {
-      if (!isMobileCarouselMode()) {
-        return;
-      }
-
-      mobileCarouselProgrammaticScroll = false;
-
-      pauseMobileCarousel();
-    },
+    pauseMobileCarousel,
     {
       passive: true
     }
@@ -609,27 +703,9 @@ function bindMobileCarouselEvents() {
 
   elements.gameGrid.addEventListener(
     "touchend",
-    settleMobileCarousel,
+    scheduleCarouselSettle,
     {
       passive: true
-    }
-  );
-
-  elements.gameGrid.addEventListener(
-    "mouseenter",
-    () => {
-      if (isMobileCarouselMode()) {
-        pauseMobileCarousel();
-      }
-    }
-  );
-
-  elements.gameGrid.addEventListener(
-    "mouseleave",
-    () => {
-      if (isMobileCarouselMode()) {
-        scheduleMobileCarouselResume();
-      }
     }
   );
 
@@ -673,28 +749,98 @@ function bindMobileCarouselEvents() {
   );
 }
 
-function handleMobileCarouselResize() {
-  window.clearTimeout(
-    mobileCarouselScrollTimer
+function prepareInfiniteCarousel() {
+  const cards = getMobileCarouselCards();
+
+  if (cards.length <= 1) {
+    mobileCarouselPrepared = true;
+    updateMobileCarouselState();
+
+    return;
+  }
+
+  if (mobileCarouselPrepared) {
+    centerMiddleCarouselCard(false);
+
+    return;
+  }
+
+  restoreOriginalCardOrder();
+
+  const orderedCards = getMobileCarouselCards();
+
+  const lastCard =
+    orderedCards[orderedCards.length - 1];
+
+  elements.gameGrid.insertBefore(
+    lastCard,
+    orderedCards[0]
   );
 
-  mobileCarouselScrollTimer =
-    window.setTimeout(() => {
-      if (!isMobileCarouselMode()) {
-        stopMobileCarousel();
-        resetMobileCarouselState();
+  mobileCarouselPrepared = true;
+}
 
-        return;
-      }
+function restoreOriginalCardOrder() {
+  const cards = getMobileCarouselCards();
 
-      scrollToMobileCarouselCard(
-        mobileCarouselIndex,
-        false
-      );
+  cards
+    .sort(
+      (firstCard, secondCard) =>
+        Number(firstCard.dataset.gameIndex) -
+        Number(secondCard.dataset.gameIndex)
+    )
+    .forEach((card) => {
+      elements.gameGrid.appendChild(card);
+    });
+}
 
-      updateMobileCarouselState();
-      startMobileCarousel();
-    }, 180);
+function handleCarouselPointerDown(event) {
+  if (!isMobileCarouselMode()) {
+    return;
+  }
+
+  mobileCarouselPointerDown = true;
+  mobileCarouselDragging = false;
+
+  mobileCarouselPointerStartX = event.clientX;
+  mobileCarouselPointerStartY = event.clientY;
+
+  pauseMobileCarousel();
+}
+
+function handleCarouselPointerMove(event) {
+  if (
+    !isMobileCarouselMode() ||
+    !mobileCarouselPointerDown
+  ) {
+    return;
+  }
+
+  const movementX = Math.abs(
+    event.clientX - mobileCarouselPointerStartX
+  );
+
+  const movementY = Math.abs(
+    event.clientY - mobileCarouselPointerStartY
+  );
+
+  if (movementX > 8 || movementY > 8) {
+    mobileCarouselDragging = true;
+  }
+}
+
+function handleCarouselPointerEnd() {
+  if (!isMobileCarouselMode()) {
+    return;
+  }
+
+  mobileCarouselPointerDown = false;
+
+  scheduleCarouselSettle();
+
+  window.setTimeout(() => {
+    mobileCarouselDragging = false;
+  }, 120);
 }
 
 function handleMobileCarouselScroll() {
@@ -710,35 +856,19 @@ function handleMobileCarouselScroll() {
 
   mobileCarouselScrollTimer =
     window.setTimeout(() => {
-      const closestIndex =
-        getClosestMobileCarouselIndex();
-
-      mobileCarouselIndex = closestIndex;
-
-      updateMobileCarouselState();
-
       if (
         !mobileCarouselPointerDown &&
-        !mobileCarouselProgrammaticScroll
+        !mobileCarouselIsAnimating
       ) {
-        scrollToMobileCarouselCard(
-          mobileCarouselIndex,
-          true
-        );
-
-        scheduleMobileCarouselResume();
+        settleInfiniteCarousel();
       }
-
-      mobileCarouselProgrammaticScroll = false;
-    }, 150);
+    }, MOBILE_CAROUSEL_SETTLE_DELAY);
 }
 
-function settleMobileCarousel() {
+function scheduleCarouselSettle() {
   if (!isMobileCarouselMode()) {
     return;
   }
-
-  mobileCarouselPointerDown = false;
 
   window.clearTimeout(
     mobileCarouselScrollTimer
@@ -746,38 +876,194 @@ function settleMobileCarousel() {
 
   mobileCarouselScrollTimer =
     window.setTimeout(() => {
-      mobileCarouselIndex =
-        getClosestMobileCarouselIndex();
-
-      scrollToMobileCarouselCard(
-        mobileCarouselIndex,
-        true
-      );
-
+      settleInfiniteCarousel();
       scheduleMobileCarouselResume();
-    }, 120);
+    }, MOBILE_CAROUSEL_SETTLE_DELAY);
 }
 
-function getMobileCarouselCards() {
-  if (!elements.gameGrid) {
-    return [];
+function settleInfiniteCarousel() {
+  const cards = getMobileCarouselCards();
+
+  if (
+    !isMobileCarouselMode() ||
+    cards.length <= 1 ||
+    mobileCarouselIsAnimating
+  ) {
+    return;
   }
 
-  return Array.from(
-    elements.gameGrid.querySelectorAll(
-      ".game-card"
-    )
+  const closestIndex =
+    getClosestCarouselDomIndex();
+
+  if (closestIndex === 0) {
+    rotateCarouselBackward();
+    centerMiddleCarouselCard(false);
+    updateMobileCarouselState();
+
+    return;
+  }
+
+  if (closestIndex >= 2) {
+    rotateCarouselForward();
+    centerMiddleCarouselCard(false);
+    updateMobileCarouselState();
+
+    return;
+  }
+
+  centerMiddleCarouselCard(true);
+}
+
+function rotateCarouselForward() {
+  const firstCard =
+    elements.gameGrid.firstElementChild;
+
+  if (!firstCard) {
+    return;
+  }
+
+  elements.gameGrid.appendChild(firstCard);
+}
+
+function rotateCarouselBackward() {
+  const lastCard =
+    elements.gameGrid.lastElementChild;
+
+  const firstCard =
+    elements.gameGrid.firstElementChild;
+
+  if (!lastCard || !firstCard) {
+    return;
+  }
+
+  elements.gameGrid.insertBefore(
+    lastCard,
+    firstCard
   );
 }
 
-function isMobileCarouselMode() {
-  return (
-    window.innerWidth <=
-    MOBILE_CAROUSEL_BREAKPOINT
+function centerMiddleCarouselCard(smooth = false) {
+  const cards = getMobileCarouselCards();
+
+  if (cards.length === 0) {
+    return;
+  }
+
+  const middleIndex =
+    cards.length > 1 ? 1 : 0;
+
+  scrollToCarouselCard(
+    cards[middleIndex],
+    smooth
   );
 }
 
-function getClosestMobileCarouselIndex() {
+function scrollToCarouselCard(
+  card,
+  smooth = true
+) {
+  if (
+    !card ||
+    !isMobileCarouselMode()
+  ) {
+    return;
+  }
+
+  const gridRect =
+    elements.gameGrid.getBoundingClientRect();
+
+  const cardRect =
+    card.getBoundingClientRect();
+
+  const targetScrollLeft =
+    elements.gameGrid.scrollLeft +
+    cardRect.left -
+    gridRect.left -
+    (gridRect.width - cardRect.width) / 2;
+
+  if (!smooth) {
+    elements.gameGrid.scrollLeft =
+      targetScrollLeft;
+
+    requestAnimationFrame(
+      updateMobileCarouselState
+    );
+
+    return;
+  }
+
+  mobileCarouselIsAnimating = true;
+
+  elements.gameGrid.scrollTo({
+    left: targetScrollLeft,
+    behavior: "smooth"
+  });
+
+  window.clearTimeout(
+    mobileCarouselAnimationTimer
+  );
+
+  mobileCarouselAnimationTimer =
+    window.setTimeout(() => {
+      mobileCarouselIsAnimating = false;
+
+      settleInfiniteCarousel();
+    }, MOBILE_CAROUSEL_ANIMATION_TIME);
+}
+
+function advanceMobileCarousel() {
+  const cards = getMobileCarouselCards();
+
+  if (
+    !isMobileCarouselMode() ||
+    cards.length <= 1 ||
+    mobileCarouselPointerDown ||
+    mobileCarouselIsAnimating
+  ) {
+    return;
+  }
+
+  const nextCard = cards[2];
+
+  if (!nextCard) {
+    return;
+  }
+
+  mobileCarouselIsAnimating = true;
+
+  const gridRect =
+    elements.gameGrid.getBoundingClientRect();
+
+  const cardRect =
+    nextCard.getBoundingClientRect();
+
+  const targetScrollLeft =
+    elements.gameGrid.scrollLeft +
+    cardRect.left -
+    gridRect.left -
+    (gridRect.width - cardRect.width) / 2;
+
+  elements.gameGrid.scrollTo({
+    left: targetScrollLeft,
+    behavior: "smooth"
+  });
+
+  window.clearTimeout(
+    mobileCarouselAnimationTimer
+  );
+
+  mobileCarouselAnimationTimer =
+    window.setTimeout(() => {
+      rotateCarouselForward();
+      centerMiddleCarouselCard(false);
+
+      mobileCarouselIsAnimating = false;
+
+      updateMobileCarouselState();
+    }, MOBILE_CAROUSEL_ANIMATION_TIME);
+}
+
+function getClosestCarouselDomIndex() {
   const cards = getMobileCarouselCards();
 
   if (cards.length === 0) {
@@ -822,28 +1108,35 @@ function updateMobileCarouselState() {
     return;
   }
 
+  if (cards.length === 0) {
+    return;
+  }
+
   const gridRect =
     elements.gameGrid.getBoundingClientRect();
 
   const gridCenter =
     gridRect.left + gridRect.width / 2;
 
-  let closestIndex = 0;
+  let closestCard = cards[0];
   let closestDistance = Infinity;
 
-  cards.forEach((card, index) => {
+  cards.forEach((card) => {
     const cardRect =
       card.getBoundingClientRect();
 
     const cardCenter =
       cardRect.left + cardRect.width / 2;
 
-    const distance = Math.abs(
-      gridCenter - cardCenter
-    );
+    const signedDistance =
+      cardCenter - gridCenter;
+
+    const absoluteDistance =
+      Math.abs(signedDistance);
 
     const normalizedDistance = Math.min(
-      distance / Math.max(cardRect.width, 1),
+      absoluteDistance /
+        Math.max(cardRect.width, 1),
       1.4
     );
 
@@ -854,25 +1147,23 @@ function updateMobileCarouselState() {
 
     card.classList.toggle(
       "is-carousel-left",
-      cardCenter < gridCenter
+      signedDistance < -2
     );
 
     card.classList.toggle(
       "is-carousel-right",
-      cardCenter > gridCenter
+      signedDistance > 2
     );
 
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestIndex = index;
+    if (absoluteDistance < closestDistance) {
+      closestDistance = absoluteDistance;
+      closestCard = card;
     }
   });
 
-  mobileCarouselIndex = closestIndex;
-
-  cards.forEach((card, index) => {
+  cards.forEach((card) => {
     const isActive =
-      index === mobileCarouselIndex;
+      card === closestCard;
 
     card.classList.toggle(
       "is-carousel-active",
@@ -908,105 +1199,68 @@ function setCardInteractiveState(card, isActive) {
     element.setAttribute("tabindex", "-1");
     element.setAttribute("aria-hidden", "true");
   });
+
+  if (card.classList.contains("is-playable")) {
+    card.setAttribute(
+      "tabindex",
+      isActive ? "0" : "-1"
+    );
+  }
 }
 
 function resetMobileCarouselState() {
-  getMobileCarouselCards().forEach(
-    (card) => {
-      card.classList.remove(
-        "is-carousel-active",
-        "is-carousel-left",
-        "is-carousel-right"
-      );
+  getMobileCarouselCards().forEach((card) => {
+    card.classList.remove(
+      "is-carousel-active",
+      "is-carousel-left",
+      "is-carousel-right"
+    );
 
-      card.style.removeProperty(
-        "--carousel-distance"
-      );
+    card.style.removeProperty(
+      "--carousel-distance"
+    );
 
-      card.removeAttribute(
-        "aria-current"
-      );
+    card.removeAttribute(
+      "aria-current"
+    );
 
-      card
-        .querySelectorAll("a, button")
-        .forEach((element) => {
-          element.removeAttribute("tabindex");
-          element.removeAttribute("aria-hidden");
-        });
+    if (card.classList.contains("is-playable")) {
+      card.setAttribute(
+        "tabindex",
+        "0"
+      );
     }
-  );
-}
 
-function scrollToMobileCarouselCard(
-  index,
-  smooth = true
-) {
-  const cards = getMobileCarouselCards();
-
-  if (
-    !isMobileCarouselMode() ||
-    cards.length === 0
-  ) {
-    return;
-  }
-
-  const safeIndex =
-    ((index % cards.length) + cards.length) %
-    cards.length;
-
-  mobileCarouselIndex = safeIndex;
-  mobileCarouselProgrammaticScroll = true;
-
-  const card = cards[safeIndex];
-
-  const gridRect =
-    elements.gameGrid.getBoundingClientRect();
-
-  const cardRect =
-    card.getBoundingClientRect();
-
-  const targetLeft =
-    elements.gameGrid.scrollLeft +
-    cardRect.left -
-    gridRect.left -
-    (gridRect.width - cardRect.width) / 2;
-
-  elements.gameGrid.scrollTo({
-    left: targetLeft,
-    behavior: smooth ? "smooth" : "auto"
+    card
+      .querySelectorAll("a, button")
+      .forEach((element) => {
+        element.removeAttribute("tabindex");
+        element.removeAttribute("aria-hidden");
+      });
   });
+}
 
-  window.setTimeout(
-    () => {
-      updateMobileCarouselState();
-      mobileCarouselProgrammaticScroll = false;
-    },
-    smooth ? 480 : 40
+function getMobileCarouselCards() {
+  if (!elements.gameGrid) {
+    return [];
+  }
+
+  return Array.from(
+    elements.gameGrid.querySelectorAll(
+      ".game-card"
+    )
   );
 }
 
-function advanceMobileCarousel() {
-  const cards = getMobileCarouselCards();
-
-  if (
-    !isMobileCarouselMode() ||
-    cards.length <= 1
-  ) {
-    return;
-  }
-
-  const nextIndex =
-    (mobileCarouselIndex + 1) %
-    cards.length;
-
-  scrollToMobileCarouselCard(
-    nextIndex,
-    true
+function isMobileCarouselMode() {
+  return (
+    window.innerWidth <=
+    MOBILE_CAROUSEL_BREAKPOINT
   );
 }
 
 function startMobileCarousel() {
-  stopMobileCarousel();
+  pauseMobileCarousel();
 
   if (
     !isMobileCarouselMode() ||
@@ -1016,10 +1270,11 @@ function startMobileCarousel() {
     return;
   }
 
-  mobileCarouselTimer = window.setInterval(
-    advanceMobileCarousel,
-    MOBILE_CAROUSEL_INTERVAL
-  );
+  mobileCarouselTimer =
+    window.setInterval(
+      advanceMobileCarousel,
+      MOBILE_CAROUSEL_INTERVAL
+    );
 }
 
 function pauseMobileCarousel() {
@@ -1040,14 +1295,6 @@ function pauseMobileCarousel() {
   }
 }
 
-function stopMobileCarousel() {
-  pauseMobileCarousel();
-
-  window.clearTimeout(
-    mobileCarouselScrollTimer
-  );
-}
-
 function scheduleMobileCarouselResume() {
   pauseMobileCarousel();
 
@@ -1062,9 +1309,49 @@ function scheduleMobileCarouselResume() {
     );
 }
 
-/* =========================================================
-   後續作品
-   ========================================================= */
+function clearMobileCarouselTimers() {
+  pauseMobileCarousel();
+
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+
+  window.clearTimeout(
+    mobileCarouselAnimationTimer
+  );
+
+  mobileCarouselScrollTimer = null;
+  mobileCarouselAnimationTimer = null;
+
+  mobileCarouselIsAnimating = false;
+}
+
+function handleMobileCarouselResize() {
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+
+  mobileCarouselScrollTimer =
+    window.setTimeout(() => {
+      clearMobileCarouselTimers();
+
+      if (!isMobileCarouselMode()) {
+        restoreOriginalCardOrder();
+        resetMobileCarouselState();
+
+        mobileCarouselPrepared = false;
+
+        return;
+      }
+
+      mobileCarouselPrepared = false;
+
+      prepareInfiniteCarousel();
+      centerMiddleCarouselCard(false);
+      updateMobileCarouselState();
+      startMobileCarousel();
+    }, 180);
+}
 
 function renderUpcomingProjects(currentGameCount) {
   if (!elements.upcomingGrid) {
@@ -1120,10 +1407,6 @@ function renderUpcomingProjects(currentGameCount) {
     elements.upcomingGrid.appendChild(article);
   }
 }
-
-/* =========================================================
-   Modal
-   ========================================================= */
 
 function bindModal() {
   if (
@@ -1182,6 +1465,7 @@ function openGameModal(
   }
 
   const theme = getGameTheme(game);
+
   const projectNumber =
     formatProjectNumber(index + 1);
 
@@ -1437,10 +1721,6 @@ function trapModalFocus(event) {
   }
 }
 
-/* =========================================================
-   Modal 清單
-   ========================================================= */
-
 function renderTechnologyList(technologies) {
   if (!elements.modalTechnologies) {
     return;
@@ -1545,10 +1825,6 @@ function renderControlList(controls) {
   });
 }
 
-/* =========================================================
-   進場動畫
-   ========================================================= */
-
 function initializeRevealAnimations() {
   const revealElements =
     document.querySelectorAll(
@@ -1594,10 +1870,6 @@ function initializeRevealAnimations() {
   });
 }
 
-/* =========================================================
-   錯誤畫面
-   ========================================================= */
-
 function renderLoadError(failedResults) {
   const errorMessage = failedResults
     .map((result) => result.reason?.message)
@@ -1624,10 +1896,6 @@ function renderLoadError(failedResults) {
     </article>
   `;
 }
-
-/* =========================================================
-   工具函式
-   ========================================================= */
 
 function getGameTheme(game) {
   return (
