@@ -1,0 +1,71 @@
+{
+"id": "gomoku-magic",
+"title": "魔法の五目並べ",
+"status": "PLAYABLE PROTOTYPE",
+"genre": "Strategy Board Game",
+"progress": "Demo V0.1",
+"releaseYear": 2026,
+
+"shortDescription": "結合魔法對決演出與三戰兩勝制度的五子棋遊戲 Demo。",
+
+"description": "魔法の五目並べ是 Bryce Game Studio 的第二款遊戲 Demo。作品以傳統五子棋玩法為基礎，加入玩家與 AI 的魔法對決主題、攻守交換提示、血條、比分與回合演出。玩家需要在棋盤上率先完成五子連線，並透過三戰兩勝制度擊敗 AI。",
+
+"technologies": [
+"HTML5",
+"CSS3",
+"JavaScript"
+],
+
+"features": [
+"五子棋基礎規則",
+"玩家對戰 AI",
+"三戰兩勝對決制度",
+"玩家與 AI 血條介面",
+"玩家與 AI 比分顯示",
+"每回合攻守交換",
+"攻守交換 Fade In / Fade Out 提示",
+"回合勝負判定",
+"完整對決結束後顯示 Match Result",
+"開始遊戲介面",
+"模式選擇介面",
+"單機模式入口",
+"連線對戰預留入口",
+"競技模式預留入口",
+"特殊玩法預留入口",
+"響應式遊戲介面"
+],
+
+"controls": [
+{
+"key": "滑鼠左鍵",
+"action": "選擇棋盤位置並放置棋子"
+},
+{
+"key": "開始遊玩",
+"action": "進入遊戲模式選擇介面"
+},
+{
+"key": "單機模式",
+"action": "開始與 AI 進行對戰"
+}
+],
+
+"responsibilities": [
+"遊戲玩法規劃",
+"五子棋規則實作",
+"AI 對戰邏輯",
+"回合與比分系統",
+"三戰兩勝流程",
+"血條與對戰介面設計",
+"模式選擇介面設計",
+"畫面轉場與提示動畫",
+"響應式畫面調整",
+"遊戲流程測試"
+],
+
+"coverImage": "",
+"coverImageAlt": "魔法の五目並べ遊戲封面",
+
+"gameUrl": "https://stun0019.github.io/Gomoku_Magic/",
+"repositoryUrl": "https://github.com/stun0019/Gomoku_Magic"
+}
