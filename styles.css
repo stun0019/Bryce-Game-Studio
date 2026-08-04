@@ -39,10 +39,6 @@
   );
 }
 
-/* =========================================================
-   Reset
-   ========================================================= */
-
 * {
   box-sizing: border-box;
 }
@@ -110,10 +106,6 @@ a:focus-visible {
 
   margin-inline: auto;
 }
-
-/* =========================================================
-   背景
-   ========================================================= */
 
 .page-background {
   position: fixed;
@@ -195,10 +187,6 @@ a:focus-visible {
       transparent 70%
     );
 }
-
-/* =========================================================
-   導覽列
-   ========================================================= */
 
 .site-header {
   position: sticky;
@@ -423,10 +411,6 @@ a:not(.main-navigation__github)::after {
     rotate(-45deg);
 }
 
-/* =========================================================
-   進場動畫
-   ========================================================= */
-
 [data-reveal],
 .reveal-item {
   opacity: 0;
@@ -446,10 +430,6 @@ a:not(.main-navigation__github)::after {
 
   transform: translateY(0);
 }
-
-/* =========================================================
-   Hero
-   ========================================================= */
 
 .hero-section {
   display: grid;
@@ -639,10 +619,6 @@ a:not(.main-navigation__github)::after {
   border-top: 1px solid var(--line);
 }
 
-/* =========================================================
-   Section heading
-   ========================================================= */
-
 .games-section,
 .upcoming-section,
 .about-section {
@@ -676,10 +652,6 @@ a:not(.main-navigation__github)::after {
 
   font-size: 14px;
 }
-
-/* =========================================================
-   遊戲卡片
-   ========================================================= */
 
 .game-grid {
   display: grid;
@@ -718,6 +690,45 @@ a:not(.main-navigation__github)::after {
     transform var(--transition-slow),
     border-color var(--transition-normal),
     box-shadow var(--transition-slow);
+}
+
+.game-card.is-playable {
+  cursor: pointer;
+}
+
+.game-card.is-playable:focus-visible {
+  outline: 2px solid var(--theme-secondary);
+  outline-offset: 5px;
+}
+
+.game-card.is-playable::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  content: "";
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--theme-primary) 50%,
+      transparent
+    );
+
+  border-radius: inherit;
+
+  transition:
+    opacity var(--transition-normal);
+}
+
+.game-card.is-playable:hover::after,
+.game-card.is-playable:focus-visible::after {
+  opacity: 1;
 }
 
 .game-card[data-theme="hooded"],
@@ -1327,10 +1338,6 @@ a:not(.main-navigation__github)::after {
   font-weight: 750;
 }
 
-/* =========================================================
-   按鈕
-   ========================================================= */
-
 .button {
   display: inline-flex;
   gap: 9px;
@@ -1484,10 +1491,6 @@ a:not(.main-navigation__github)::after {
   transform: rotate(45deg);
 }
 
-/* =========================================================
-   Loading
-   ========================================================= */
-
 .game-skeleton {
   min-height: 495px;
   padding: 17px;
@@ -1590,10 +1593,6 @@ a:not(.main-navigation__github)::after {
 
   border-radius: 8px;
 }
-
-/* =========================================================
-   後續作品
-   ========================================================= */
 
 .upcoming-section {
   border-top: 1px solid var(--line);
@@ -1786,10 +1785,6 @@ a:not(.main-navigation__github)::after {
   border-radius: 7px 7px 0 0;
 }
 
-/* =========================================================
-   About
-   ========================================================= */
-
 .about-panel {
   display: grid;
 
@@ -1962,10 +1957,6 @@ a:not(.main-navigation__github)::after {
   transform: translateY(-2px);
 }
 
-/* =========================================================
-   Footer
-   ========================================================= */
-
 .site-footer {
   display: flex;
   gap: 24px;
@@ -1984,10 +1975,6 @@ a:not(.main-navigation__github)::after {
 .site-footer p {
   margin: 0;
 }
-
-/* =========================================================
-   Modal
-   ========================================================= */
 
 .modal-backdrop {
   position: fixed;
@@ -2527,10 +2514,6 @@ a:not(.main-navigation__github)::after {
   min-width: 160px;
 }
 
-/* =========================================================
-   平板
-   ========================================================= */
-
 @media (max-width: 1100px) {
   .game-grid {
     grid-template-columns:
@@ -2572,10 +2555,6 @@ a:not(.main-navigation__github)::after {
     min-height: 290px;
   }
 }
-
-/* =========================================================
-   手機導覽
-   ========================================================= */
 
 @media (max-width: 840px) {
   :root {
@@ -2683,10 +2662,6 @@ a:not(.main-navigation__github)::after {
   }
 }
 
-/* =========================================================
-   手機 Coverflow 輪播
-   ========================================================= */
-
 @media (max-width: 650px) {
   .studio-brand__text small {
     display: none;
@@ -2732,12 +2707,15 @@ a:not(.main-navigation__github)::after {
     overflow-x: auto;
     overflow-y: visible;
 
-    padding-top: 18px;
+    padding-top: 20px;
+
     padding-right:
       calc(
         (100vw - min(78vw, 340px)) / 2
       );
-    padding-bottom: 38px;
+
+    padding-bottom: 40px;
+
     padding-left:
       calc(
         (100vw - min(78vw, 340px)) / 2
@@ -2758,6 +2736,8 @@ a:not(.main-navigation__github)::after {
     overscroll-behavior-x: contain;
 
     scrollbar-width: none;
+
+    touch-action: pan-x pan-y;
 
     -webkit-overflow-scrolling: touch;
   }
@@ -2875,6 +2855,8 @@ a:not(.main-navigation__github)::after {
     opacity: 1;
     filter: none;
 
+    pointer-events: auto;
+
     border-color:
       color-mix(
         in srgb,
@@ -2924,6 +2906,14 @@ a:not(.main-navigation__github)::after {
   .game-card__content {
     transition:
       opacity 380ms ease;
+  }
+
+  .game-card.is-carousel-left {
+    transform-origin: right center;
+  }
+
+  .game-card.is-carousel-right {
+    transform-origin: left center;
   }
 
   .game-card:hover {
@@ -2986,6 +2976,21 @@ a:not(.main-navigation__github)::after {
     transform:
       translateY(0)
       scale(1);
+  }
+
+  .game-card.is-playable:hover::after {
+    opacity: 0;
+  }
+
+  .game-card.is-carousel-active.is-playable::after {
+    opacity: 1;
+
+    border-color:
+      color-mix(
+        in srgb,
+        var(--theme-primary) 28%,
+        transparent
+      );
   }
 
   .game-card__artwork {
@@ -3062,14 +3067,6 @@ a:not(.main-navigation__github)::after {
 
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-  }
-
-  .game-card.is-carousel-left {
-    transform-origin: right center;
-  }
-
-  .game-card.is-carousel-right {
-    transform-origin: left center;
   }
 
   .upcoming-card {
@@ -3150,10 +3147,6 @@ a:not(.main-navigation__github)::after {
     width: 100%;
   }
 }
-
-/* =========================================================
-   減少動畫
-   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   html {
