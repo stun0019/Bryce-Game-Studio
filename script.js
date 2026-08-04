@@ -1,7 +1,8 @@
 "use strict";
 
 const GAME_DATA_FILES = [
-  "./games/hooded-escape.json"
+  "./games/hooded-escape.json",
+  "./games/Gomoku-Magic.json"
 ];
 
 const UPCOMING_PROJECT_COUNT = 2;
@@ -116,7 +117,7 @@ async function loadGames() {
     updateGameCount(loadedGames.length);
   } catch (error) {
     console.error("遊戲資料載入失敗：", error);
-    renderLoadError();
+    renderLoadError(error);
   }
 }
 
@@ -187,12 +188,29 @@ function createGameCard(game, index) {
       ? "game-card featured"
       : "game-card";
 
-  const imageUrl =
-    game.coverImage || "./assets/images/game-placeholder.jpg";
+  const hasCoverImage =
+    typeof game.coverImage === "string" &&
+    game.coverImage.trim() !== "";
 
   const technologies = Array.isArray(game.technologies)
     ? game.technologies.slice(0, 3).join(" / ")
     : "Game Project";
+
+  const coverContent = hasCoverImage
+    ? `
+      <img
+        src="${escapeAttribute(game.coverImage)}"
+        alt="${escapeAttribute(
+          game.coverImageAlt || game.title
+        )}"
+        loading="lazy"
+      >
+    `
+    : `
+      <div class="game-cover-placeholder">
+        <span>${escapeHTML(game.title)}</span>
+      </div>
+    `;
 
   article.innerHTML = `
     <div class="game-cover">
@@ -200,11 +218,7 @@ function createGameCard(game, index) {
         ${escapeHTML(game.status)}
       </span>
 
-      <img
-        src="${escapeAttribute(imageUrl)}"
-        alt="${escapeAttribute(game.coverImageAlt || game.title)}"
-        loading="lazy"
-      >
+      ${coverContent}
     </div>
 
     <div class="game-content">
@@ -216,17 +230,14 @@ function createGameCard(game, index) {
 
       <h3>${escapeHTML(game.title)}</h3>
 
-      <p>${escapeHTML(game.shortDescription || game.description)}</p>
+      <p>
+        ${escapeHTML(
+          game.shortDescription || game.description
+        )}
+      </p>
 
       <div class="card-actions">
-        <a
-          class="primary-button"
-          href="${escapeAttribute(game.gameUrl || "#")}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          開始遊戲
-        </a>
+        ${createGameButton(game.gameUrl)}
 
         <button
           class="details-button"
@@ -243,30 +254,64 @@ function createGameCard(game, index) {
     `[data-game-id="${CSS.escape(game.id)}"]`
   );
 
-  detailsButton.addEventListener("click", () => {
-    openGameModal(game, detailsButton);
-  });
+  if (detailsButton) {
+    detailsButton.addEventListener("click", () => {
+      openGameModal(game, detailsButton);
+    });
+  }
 
   const image = article.querySelector("img");
 
-  image.addEventListener("error", () => {
-    image.style.display = "none";
-  });
+  if (image) {
+    image.addEventListener("error", () => {
+      replaceBrokenImage(image, game.title);
+    });
+  }
 
   return article;
+}
+
+function createGameButton(gameUrl) {
+  if (!isValidUrl(gameUrl)) {
+    return `
+      <button
+        class="primary-button disabled"
+        type="button"
+        disabled
+      >
+        尚未開放
+      </button>
+    `;
+  }
+
+  return `
+    <a
+      class="primary-button"
+      href="${escapeAttribute(gameUrl)}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      開始遊戲
+    </a>
+  `;
 }
 
 function createLockedCard(projectNumber) {
   const article = document.createElement("article");
 
+  const projectIndex =
+    loadedGames.length + projectNumber;
+
   article.className = "game-card locked-card";
 
   article.innerHTML = `
     <div class="locked-content">
-      <div class="lock-icon" aria-hidden="true">◆</div>
+      <div class="lock-icon" aria-hidden="true">
+        ◆
+      </div>
 
       <p class="eyebrow">
-        PROJECT ${String(projectNumber + loadedGames.length).padStart(2, "0")}
+        PROJECT ${String(projectIndex).padStart(2, "0")}
       </p>
 
       <h3>尚未解鎖</h3>
@@ -293,13 +338,10 @@ function openGameModal(game, triggerElement) {
     return;
   }
 
-  lastFocusedElement = triggerElement || document.activeElement;
+  lastFocusedElement =
+    triggerElement || document.activeElement;
 
-  modalImage.src =
-    game.coverImage || "./assets/images/game-placeholder.jpg";
-
-  modalImage.alt =
-    game.coverImageAlt || `${game.title} 遊戲封面`;
+  configureModalImage(game);
 
   modalStatus.textContent =
     game.status || "DEVELOPMENT PROJECT";
@@ -335,7 +377,38 @@ function openGameModal(game, triggerElement) {
   gameModal.hidden = false;
   document.body.classList.add("modal-open");
 
-  modalClose.focus();
+  if (modalClose) {
+    modalClose.focus();
+  }
+}
+
+function configureModalImage(game) {
+  if (!modalImage) {
+    return;
+  }
+
+  const hasCoverImage =
+    typeof game.coverImage === "string" &&
+    game.coverImage.trim() !== "";
+
+  if (!hasCoverImage) {
+    modalImage.removeAttribute("src");
+    modalImage.alt = "";
+    modalImage.style.display = "none";
+    return;
+  }
+
+  modalImage.src = game.coverImage;
+  modalImage.alt =
+    game.coverImageAlt || `${game.title} 遊戲封面`;
+
+  modalImage.style.display = "block";
+
+  modalImage.onerror = () => {
+    modalImage.removeAttribute("src");
+    modalImage.alt = "";
+    modalImage.style.display = "none";
+  };
 }
 
 function closeGameModal() {
@@ -355,6 +428,10 @@ function closeGameModal() {
 }
 
 function renderFeatureList(features) {
+  if (!modalFeatures) {
+    return;
+  }
+
   modalFeatures.innerHTML = "";
 
   const safeFeatures =
@@ -377,28 +454,49 @@ function configureModalLink(element, url, label) {
 
   element.textContent = label;
 
-  if (url && url !== "#") {
-    element.href = url;
-    element.removeAttribute("aria-disabled");
-    element.classList.remove("disabled");
-  } else {
-    element.href = "#";
-    element.setAttribute("aria-disabled", "true");
-    element.classList.add("disabled");
+  const newElement = element.cloneNode(true);
+  element.replaceWith(newElement);
 
-    element.addEventListener(
-      "click",
-      preventDisabledLink,
-      { once: true }
-    );
+  if (element === modalPlayButton) {
+    window.modalPlayButton = newElement;
   }
+
+  if (element === modalRepositoryButton) {
+    window.modalRepositoryButton = newElement;
+  }
+
+  if (isValidUrl(url)) {
+    newElement.href = url;
+    newElement.target = "_blank";
+    newElement.rel = "noopener noreferrer";
+
+    newElement.removeAttribute("aria-disabled");
+    newElement.classList.remove("disabled");
+
+    return;
+  }
+
+  newElement.href = "#";
+  newElement.setAttribute("aria-disabled", "true");
+  newElement.classList.add("disabled");
+
+  newElement.addEventListener("click", (event) => {
+    event.preventDefault();
+  });
 }
 
-function preventDisabledLink(event) {
-  event.preventDefault();
+function replaceBrokenImage(image, title) {
+  const placeholder = document.createElement("div");
+
+  placeholder.className = "game-cover-placeholder";
+  placeholder.innerHTML = `
+    <span>${escapeHTML(title)}</span>
+  `;
+
+  image.replaceWith(placeholder);
 }
 
-function renderLoadError() {
+function renderLoadError(error) {
   if (!gameGrid) {
     return;
   }
@@ -408,11 +506,39 @@ function renderLoadError() {
       <h3>遊戲資料載入失敗</h3>
 
       <p>
-        請確認 games/hooded-escape.json 是否存在，
-        並確認 JSON 格式沒有錯誤。
+        請確認以下 JSON 檔案存在，並檢查檔名大小寫：
+      </p>
+
+      <p>
+        games/hooded-escape.json<br>
+        games/Gomoku-Magic.json
+      </p>
+
+      <p>
+        ${escapeHTML(error?.message || "未知錯誤")}
       </p>
     </article>
   `;
+}
+
+function isValidUrl(value) {
+  if (
+    typeof value !== "string" ||
+    value.trim() === ""
+  ) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+
+    return (
+      url.protocol === "https:" ||
+      url.protocol === "http:"
+    );
+  } catch {
+    return false;
+  }
 }
 
 function escapeHTML(value) {
