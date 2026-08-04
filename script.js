@@ -2,7 +2,7 @@
 
 /* =========================================================
    Bryce Game Studio
-   Game Lobby V0.3
+   Game Lobby V0.4
    ========================================================= */
 
 const GAME_DATA_FILES = [
@@ -12,6 +12,10 @@ const GAME_DATA_FILES = [
 ];
 
 const UPCOMING_PROJECT_COUNT = 3;
+
+const MOBILE_CAROUSEL_BREAKPOINT = 650;
+const MOBILE_CAROUSEL_INTERVAL = 4200;
+const MOBILE_CAROUSEL_RESUME_DELAY = 5500;
 
 const GAME_THEMES = {
   "hooded-escape": {
@@ -66,11 +70,13 @@ const elements = {
   modalTechnologies: document.getElementById("modalTechnologies"),
   modalFeatures: document.getElementById("modalFeatures"),
   modalControls: document.getElementById("modalControls"),
+
   modalResponsibilities: document.getElementById(
     "modalResponsibilities"
   ),
 
   modalPlayButton: document.getElementById("modalPlayButton"),
+
   modalRepositoryButton: document.getElementById(
     "modalRepositoryButton"
   )
@@ -80,7 +86,18 @@ let loadedGames = [];
 let lastFocusedElement = null;
 let modalCloseTimer = null;
 
-window.addEventListener("DOMContentLoaded", initializeStudio);
+let mobileCarouselIndex = 0;
+let mobileCarouselTimer = null;
+let mobileCarouselResumeTimer = null;
+let mobileCarouselScrollTimer = null;
+let mobileCarouselBound = false;
+let mobileCarouselPointerDown = false;
+let mobileCarouselProgrammaticScroll = false;
+
+window.addEventListener(
+  "DOMContentLoaded",
+  initializeStudio
+);
 
 async function initializeStudio() {
   setCurrentYear();
@@ -131,7 +148,10 @@ function bindNavigation() {
       "is-open"
     );
 
-    elements.menuButton.classList.toggle("is-open", isOpen);
+    elements.menuButton.classList.toggle(
+      "is-open",
+      isOpen
+    );
 
     elements.menuButton.setAttribute(
       "aria-expanded",
@@ -142,7 +162,10 @@ function bindNavigation() {
   elements.navigation
     .querySelectorAll("a")
     .forEach((link) => {
-      link.addEventListener("click", closeNavigation);
+      link.addEventListener(
+        "click",
+        closeNavigation
+      );
     });
 
   document.addEventListener("click", (event) => {
@@ -188,7 +211,9 @@ async function loadGames() {
   }
 
   const results = await Promise.allSettled(
-    GAME_DATA_FILES.map((filePath) => loadGameData(filePath))
+    GAME_DATA_FILES.map((filePath) =>
+      loadGameData(filePath)
+    )
   );
 
   loadedGames = results
@@ -278,8 +303,12 @@ function renderGameLibrary(games) {
   games.forEach((game, index) => {
     const gameCard = createGameCard(game, index);
 
+    gameCard.dataset.carouselIndex = String(index);
+
     elements.gameGrid.appendChild(gameCard);
   });
+
+  initializeMobileCarousel();
 }
 
 function createGameCard(game, index) {
@@ -287,6 +316,7 @@ function createGameCard(game, index) {
 
   const theme = getGameTheme(game);
   const projectNumber = formatProjectNumber(index + 1);
+
   const technologies = normalizeStringArray(
     game.technologies
   ).slice(0, 3);
@@ -469,6 +499,570 @@ function createPlayLink(url, label, className) {
 }
 
 /* =========================================================
+   手機 Coverflow 輪播
+   ========================================================= */
+
+function initializeMobileCarousel() {
+  if (!elements.gameGrid) {
+    return;
+  }
+
+  stopMobileCarousel();
+
+  const cards = getMobileCarouselCards();
+
+  if (cards.length === 0) {
+    return;
+  }
+
+  mobileCarouselIndex = Math.min(
+    mobileCarouselIndex,
+    cards.length - 1
+  );
+
+  if (!mobileCarouselBound) {
+    bindMobileCarouselEvents();
+    mobileCarouselBound = true;
+  }
+
+  if (!isMobileCarouselMode()) {
+    resetMobileCarouselState();
+
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    scrollToMobileCarouselCard(
+      mobileCarouselIndex,
+      false
+    );
+
+    updateMobileCarouselState();
+    startMobileCarousel();
+  });
+}
+
+function bindMobileCarouselEvents() {
+  if (!elements.gameGrid) {
+    return;
+  }
+
+  elements.gameGrid.addEventListener(
+    "scroll",
+    handleMobileCarouselScroll,
+    {
+      passive: true
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "pointerdown",
+    () => {
+      if (!isMobileCarouselMode()) {
+        return;
+      }
+
+      mobileCarouselPointerDown = true;
+      mobileCarouselProgrammaticScroll = false;
+
+      pauseMobileCarousel();
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "pointerup",
+    () => {
+      if (!isMobileCarouselMode()) {
+        return;
+      }
+
+      mobileCarouselPointerDown = false;
+
+      settleMobileCarousel();
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "pointercancel",
+    () => {
+      mobileCarouselPointerDown = false;
+
+      settleMobileCarousel();
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "touchstart",
+    () => {
+      if (!isMobileCarouselMode()) {
+        return;
+      }
+
+      mobileCarouselProgrammaticScroll = false;
+
+      pauseMobileCarousel();
+    },
+    {
+      passive: true
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "touchend",
+    settleMobileCarousel,
+    {
+      passive: true
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "mouseenter",
+    () => {
+      if (isMobileCarouselMode()) {
+        pauseMobileCarousel();
+      }
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "mouseleave",
+    () => {
+      if (isMobileCarouselMode()) {
+        scheduleMobileCarouselResume();
+      }
+    }
+  );
+
+  elements.gameGrid.addEventListener(
+    "focusin",
+    pauseMobileCarousel
+  );
+
+  elements.gameGrid.addEventListener(
+    "focusout",
+    () => {
+      if (isMobileCarouselMode()) {
+        scheduleMobileCarouselResume();
+      }
+    }
+  );
+
+  window.addEventListener(
+    "resize",
+    handleMobileCarouselResize
+  );
+
+  window.addEventListener(
+    "orientationchange",
+    handleMobileCarouselResize
+  );
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (document.hidden) {
+        pauseMobileCarousel();
+
+        return;
+      }
+
+      if (isMobileCarouselMode()) {
+        scheduleMobileCarouselResume();
+      }
+    }
+  );
+}
+
+function handleMobileCarouselResize() {
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+
+  mobileCarouselScrollTimer =
+    window.setTimeout(() => {
+      if (!isMobileCarouselMode()) {
+        stopMobileCarousel();
+        resetMobileCarouselState();
+
+        return;
+      }
+
+      scrollToMobileCarouselCard(
+        mobileCarouselIndex,
+        false
+      );
+
+      updateMobileCarouselState();
+      startMobileCarousel();
+    }, 180);
+}
+
+function handleMobileCarouselScroll() {
+  if (!isMobileCarouselMode()) {
+    return;
+  }
+
+  updateMobileCarouselState();
+
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+
+  mobileCarouselScrollTimer =
+    window.setTimeout(() => {
+      const closestIndex =
+        getClosestMobileCarouselIndex();
+
+      mobileCarouselIndex = closestIndex;
+
+      updateMobileCarouselState();
+
+      if (
+        !mobileCarouselPointerDown &&
+        !mobileCarouselProgrammaticScroll
+      ) {
+        scrollToMobileCarouselCard(
+          mobileCarouselIndex,
+          true
+        );
+
+        scheduleMobileCarouselResume();
+      }
+
+      mobileCarouselProgrammaticScroll = false;
+    }, 150);
+}
+
+function settleMobileCarousel() {
+  if (!isMobileCarouselMode()) {
+    return;
+  }
+
+  mobileCarouselPointerDown = false;
+
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+
+  mobileCarouselScrollTimer =
+    window.setTimeout(() => {
+      mobileCarouselIndex =
+        getClosestMobileCarouselIndex();
+
+      scrollToMobileCarouselCard(
+        mobileCarouselIndex,
+        true
+      );
+
+      scheduleMobileCarouselResume();
+    }, 120);
+}
+
+function getMobileCarouselCards() {
+  if (!elements.gameGrid) {
+    return [];
+  }
+
+  return Array.from(
+    elements.gameGrid.querySelectorAll(
+      ".game-card"
+    )
+  );
+}
+
+function isMobileCarouselMode() {
+  return (
+    window.innerWidth <=
+    MOBILE_CAROUSEL_BREAKPOINT
+  );
+}
+
+function getClosestMobileCarouselIndex() {
+  const cards = getMobileCarouselCards();
+
+  if (cards.length === 0) {
+    return 0;
+  }
+
+  const gridRect =
+    elements.gameGrid.getBoundingClientRect();
+
+  const gridCenter =
+    gridRect.left + gridRect.width / 2;
+
+  let closestIndex = 0;
+  let closestDistance = Infinity;
+
+  cards.forEach((card, index) => {
+    const cardRect =
+      card.getBoundingClientRect();
+
+    const cardCenter =
+      cardRect.left + cardRect.width / 2;
+
+    const distance = Math.abs(
+      gridCenter - cardCenter
+    );
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+}
+
+function updateMobileCarouselState() {
+  const cards = getMobileCarouselCards();
+
+  if (!isMobileCarouselMode()) {
+    resetMobileCarouselState();
+
+    return;
+  }
+
+  const gridRect =
+    elements.gameGrid.getBoundingClientRect();
+
+  const gridCenter =
+    gridRect.left + gridRect.width / 2;
+
+  let closestIndex = 0;
+  let closestDistance = Infinity;
+
+  cards.forEach((card, index) => {
+    const cardRect =
+      card.getBoundingClientRect();
+
+    const cardCenter =
+      cardRect.left + cardRect.width / 2;
+
+    const distance = Math.abs(
+      gridCenter - cardCenter
+    );
+
+    const normalizedDistance = Math.min(
+      distance / Math.max(cardRect.width, 1),
+      1.4
+    );
+
+    card.style.setProperty(
+      "--carousel-distance",
+      String(normalizedDistance)
+    );
+
+    card.classList.toggle(
+      "is-carousel-left",
+      cardCenter < gridCenter
+    );
+
+    card.classList.toggle(
+      "is-carousel-right",
+      cardCenter > gridCenter
+    );
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  mobileCarouselIndex = closestIndex;
+
+  cards.forEach((card, index) => {
+    const isActive =
+      index === mobileCarouselIndex;
+
+    card.classList.toggle(
+      "is-carousel-active",
+      isActive
+    );
+
+    card.setAttribute(
+      "aria-current",
+      isActive ? "true" : "false"
+    );
+
+    setCardInteractiveState(
+      card,
+      isActive
+    );
+  });
+}
+
+function setCardInteractiveState(card, isActive) {
+  const interactiveElements =
+    card.querySelectorAll(
+      "a, button"
+    );
+
+  interactiveElements.forEach((element) => {
+    if (isActive) {
+      element.removeAttribute("tabindex");
+      element.removeAttribute("aria-hidden");
+
+      return;
+    }
+
+    element.setAttribute("tabindex", "-1");
+    element.setAttribute("aria-hidden", "true");
+  });
+}
+
+function resetMobileCarouselState() {
+  getMobileCarouselCards().forEach(
+    (card) => {
+      card.classList.remove(
+        "is-carousel-active",
+        "is-carousel-left",
+        "is-carousel-right"
+      );
+
+      card.style.removeProperty(
+        "--carousel-distance"
+      );
+
+      card.removeAttribute(
+        "aria-current"
+      );
+
+      card
+        .querySelectorAll("a, button")
+        .forEach((element) => {
+          element.removeAttribute("tabindex");
+          element.removeAttribute("aria-hidden");
+        });
+    }
+  );
+}
+
+function scrollToMobileCarouselCard(
+  index,
+  smooth = true
+) {
+  const cards = getMobileCarouselCards();
+
+  if (
+    !isMobileCarouselMode() ||
+    cards.length === 0
+  ) {
+    return;
+  }
+
+  const safeIndex =
+    ((index % cards.length) + cards.length) %
+    cards.length;
+
+  mobileCarouselIndex = safeIndex;
+  mobileCarouselProgrammaticScroll = true;
+
+  const card = cards[safeIndex];
+
+  const gridRect =
+    elements.gameGrid.getBoundingClientRect();
+
+  const cardRect =
+    card.getBoundingClientRect();
+
+  const targetLeft =
+    elements.gameGrid.scrollLeft +
+    cardRect.left -
+    gridRect.left -
+    (gridRect.width - cardRect.width) / 2;
+
+  elements.gameGrid.scrollTo({
+    left: targetLeft,
+    behavior: smooth ? "smooth" : "auto"
+  });
+
+  window.setTimeout(
+    () => {
+      updateMobileCarouselState();
+      mobileCarouselProgrammaticScroll = false;
+    },
+    smooth ? 480 : 40
+  );
+}
+
+function advanceMobileCarousel() {
+  const cards = getMobileCarouselCards();
+
+  if (
+    !isMobileCarouselMode() ||
+    cards.length <= 1
+  ) {
+    return;
+  }
+
+  const nextIndex =
+    (mobileCarouselIndex + 1) %
+    cards.length;
+
+  scrollToMobileCarouselCard(
+    nextIndex,
+    true
+  );
+}
+
+function startMobileCarousel() {
+  stopMobileCarousel();
+
+  if (
+    !isMobileCarouselMode() ||
+    document.hidden ||
+    getMobileCarouselCards().length <= 1
+  ) {
+    return;
+  }
+
+  mobileCarouselTimer = window.setInterval(
+    advanceMobileCarousel,
+    MOBILE_CAROUSEL_INTERVAL
+  );
+}
+
+function pauseMobileCarousel() {
+  if (mobileCarouselTimer) {
+    window.clearInterval(
+      mobileCarouselTimer
+    );
+
+    mobileCarouselTimer = null;
+  }
+
+  if (mobileCarouselResumeTimer) {
+    window.clearTimeout(
+      mobileCarouselResumeTimer
+    );
+
+    mobileCarouselResumeTimer = null;
+  }
+}
+
+function stopMobileCarousel() {
+  pauseMobileCarousel();
+
+  window.clearTimeout(
+    mobileCarouselScrollTimer
+  );
+}
+
+function scheduleMobileCarouselResume() {
+  pauseMobileCarousel();
+
+  if (!isMobileCarouselMode()) {
+    return;
+  }
+
+  mobileCarouselResumeTimer =
+    window.setTimeout(
+      startMobileCarousel,
+      MOBILE_CAROUSEL_RESUME_DELAY
+    );
+}
+
+/* =========================================================
    後續作品
    ========================================================= */
 
@@ -487,7 +1081,8 @@ function renderUpcomingProjects(currentGameCount) {
     const projectNumber =
       currentGameCount + index;
 
-    const article = document.createElement("article");
+    const article =
+      document.createElement("article");
 
     article.className =
       "upcoming-card reveal-item is-visible";
@@ -531,7 +1126,10 @@ function renderUpcomingProjects(currentGameCount) {
    ========================================================= */
 
 function bindModal() {
-  if (!elements.modalBackdrop || !elements.modalClose) {
+  if (
+    !elements.modalBackdrop ||
+    !elements.modalClose
+  ) {
     return;
   }
 
@@ -564,7 +1162,11 @@ function bindModal() {
   });
 }
 
-function openGameModal(game, index, triggerElement) {
+function openGameModal(
+  game,
+  index,
+  triggerElement
+) {
   if (
     !elements.modalBackdrop ||
     !elements.modalPanel
@@ -572,33 +1174,47 @@ function openGameModal(game, index, triggerElement) {
     return;
   }
 
+  pauseMobileCarousel();
+
   if (modalCloseTimer) {
     window.clearTimeout(modalCloseTimer);
     modalCloseTimer = null;
   }
 
   const theme = getGameTheme(game);
-  const projectNumber = formatProjectNumber(index + 1);
+  const projectNumber =
+    formatProjectNumber(index + 1);
 
   lastFocusedElement =
     triggerElement || document.activeElement;
 
-  elements.modalPanel.dataset.theme = theme.theme;
+  elements.modalPanel.dataset.theme =
+    theme.theme;
 
   setText(
     elements.modalProjectNumber,
     `PROJECT ${projectNumber}`
   );
 
-  setText(elements.modalThemeLabel, theme.label);
-  setText(elements.modalMonogram, theme.monogram);
+  setText(
+    elements.modalThemeLabel,
+    theme.label
+  );
+
+  setText(
+    elements.modalMonogram,
+    theme.monogram
+  );
 
   setText(
     elements.modalStatus,
     game.status || "PROJECT"
   );
 
-  setText(elements.modalTitle, game.title);
+  setText(
+    elements.modalTitle,
+    game.title
+  );
 
   setText(
     elements.modalDescription,
@@ -620,14 +1236,19 @@ function openGameModal(game, index, triggerElement) {
     game.releaseYear || "未設定"
   );
 
-  renderTechnologyList(game.technologies);
+  renderTechnologyList(
+    game.technologies
+  );
+
   renderSimpleList(
     elements.modalFeatures,
     game.features,
     "作品內容整理中"
   );
 
-  renderControlList(game.controls);
+  renderControlList(
+    game.controls
+  );
 
   renderSimpleList(
     elements.modalResponsibilities,
@@ -650,8 +1271,13 @@ function openGameModal(game, index, triggerElement) {
   elements.modalBackdrop.hidden = false;
 
   requestAnimationFrame(() => {
-    elements.modalBackdrop.classList.add("is-open");
-    elements.body.classList.add("modal-open");
+    elements.modalBackdrop.classList.add(
+      "is-open"
+    );
+
+    elements.body.classList.add(
+      "modal-open"
+    );
   });
 
   elements.modalClose.focus();
@@ -662,8 +1288,13 @@ function closeGameModal() {
     return;
   }
 
-  elements.modalBackdrop.classList.remove("is-open");
-  elements.body.classList.remove("modal-open");
+  elements.modalBackdrop.classList.remove(
+    "is-open"
+  );
+
+  elements.body.classList.remove(
+    "modal-open"
+  );
 
   modalCloseTimer = window.setTimeout(() => {
     elements.modalBackdrop.hidden = true;
@@ -673,6 +1304,10 @@ function closeGameModal() {
       typeof lastFocusedElement.focus === "function"
     ) {
       lastFocusedElement.focus();
+    }
+
+    if (isMobileCarouselMode()) {
+      scheduleMobileCarouselResume();
     }
   }, 280);
 }
@@ -694,8 +1329,13 @@ function configureModalArtwork(game) {
     hasCoverImage
   );
 
-  elements.modalCoverImage.hidden = !hasCoverImage;
-  elements.modalCoverImage.removeAttribute("src");
+  elements.modalCoverImage.hidden =
+    !hasCoverImage;
+
+  elements.modalCoverImage.removeAttribute(
+    "src"
+  );
+
   elements.modalCoverImage.alt = "";
   elements.modalCoverImage.onerror = null;
 
@@ -703,7 +1343,8 @@ function configureModalArtwork(game) {
     return;
   }
 
-  elements.modalCoverImage.src = game.coverImage;
+  elements.modalCoverImage.src =
+    game.coverImage;
 
   elements.modalCoverImage.alt =
     game.coverImageAlt ||
@@ -723,7 +1364,8 @@ function configureModalLink(element, url) {
     return;
   }
 
-  const isAvailable = isValidHttpUrl(url);
+  const isAvailable =
+    isValidHttpUrl(url);
 
   element.classList.toggle(
     "is-disabled",
@@ -768,10 +1410,13 @@ function trapModalFocus(event) {
     return;
   }
 
-  const firstElement = focusableElements[0];
+  const firstElement =
+    focusableElements[0];
 
   const lastElement =
-    focusableElements[focusableElements.length - 1];
+    focusableElements[
+      focusableElements.length - 1
+    ];
 
   if (
     event.shiftKey &&
@@ -801,19 +1446,25 @@ function renderTechnologyList(technologies) {
     return;
   }
 
-  const items = normalizeStringArray(technologies);
+  const items =
+    normalizeStringArray(technologies);
 
   elements.modalTechnologies.innerHTML = "";
 
   const safeItems =
-    items.length > 0 ? items : ["未設定"];
+    items.length > 0
+      ? items
+      : ["未設定"];
 
   safeItems.forEach((technology) => {
-    const item = document.createElement("li");
+    const item =
+      document.createElement("li");
 
     item.textContent = technology;
 
-    elements.modalTechnologies.appendChild(item);
+    elements.modalTechnologies.appendChild(
+      item
+    );
   });
 }
 
@@ -826,15 +1477,19 @@ function renderSimpleList(
     return;
   }
 
-  const items = normalizeStringArray(values);
+  const items =
+    normalizeStringArray(values);
 
   container.innerHTML = "";
 
   const safeItems =
-    items.length > 0 ? items : [fallbackText];
+    items.length > 0
+      ? items
+      : [fallbackText];
 
   safeItems.forEach((value) => {
-    const item = document.createElement("li");
+    const item =
+      document.createElement("li");
 
     item.textContent = value;
 
@@ -853,27 +1508,40 @@ function renderControlList(controls) {
     !Array.isArray(controls) ||
     controls.length === 0
   ) {
-    const item = document.createElement("li");
+    const item =
+      document.createElement("li");
 
     item.innerHTML =
       "<span>操作方式整理中</span>";
 
-    elements.modalControls.appendChild(item);
+    elements.modalControls.appendChild(
+      item
+    );
 
     return;
   }
 
   controls.forEach((control) => {
-    const item = document.createElement("li");
-    const key = document.createElement("kbd");
-    const action = document.createElement("span");
+    const item =
+      document.createElement("li");
 
-    key.textContent = control?.key || "—";
-    action.textContent = control?.action || "未設定";
+    const key =
+      document.createElement("kbd");
+
+    const action =
+      document.createElement("span");
+
+    key.textContent =
+      control?.key || "—";
+
+    action.textContent =
+      control?.action || "未設定";
 
     item.append(key, action);
 
-    elements.modalControls.appendChild(item);
+    elements.modalControls.appendChild(
+      item
+    );
   });
 }
 
@@ -882,9 +1550,10 @@ function renderControlList(controls) {
    ========================================================= */
 
 function initializeRevealAnimations() {
-  const revealElements = document.querySelectorAll(
-    "[data-reveal]"
-  );
+  const revealElements =
+    document.querySelectorAll(
+      "[data-reveal]"
+    );
 
   if (
     !("IntersectionObserver" in window) ||
@@ -906,8 +1575,13 @@ function initializeRevealAnimations() {
           return;
         }
 
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
+        entry.target.classList.add(
+          "is-visible"
+        );
+
+        observer.unobserve(
+          entry.target
+        );
       });
     },
     {
@@ -978,7 +1652,9 @@ function getMonogram(title) {
     return `${words[0][0]}${words[1][0]}`.toUpperCase();
   }
 
-  return normalizedTitle.slice(0, 2).toUpperCase();
+  return normalizedTitle
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 function normalizeStringArray(value) {
