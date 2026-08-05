@@ -3,7 +3,8 @@
 const GAME_DATA_FILES = [
   "./games/hooded-escape.json",
   "./games/Gomoku-Magic.json",
-  "./games/game-cook.json"
+  "./games/game-cook.json",
+  "./games/Mist-Ruins.json"
 ];
 
 const UPCOMING_PROJECT_COUNT = 3;
@@ -40,6 +41,12 @@ const GAME_THEMES = {
     theme: "cooking",
     label: "KITCHEN RUSH",
     monogram: "GC"
+  },
+
+  "mist-ruins": {
+    theme: "mist",
+    label: "FOGBOUND RUINS",
+    monogram: "MR"
   }
 };
 
@@ -49,12 +56,15 @@ const elements = {
   loader: document.getElementById("studioLoader"),
   loaderBar: document.getElementById("loaderBar"),
   loaderPercent: document.getElementById("loaderPercent"),
+
   loaderProgressbar: document.getElementById(
     "loaderProgressbar"
   ),
+
   loaderProgressPanel: document.getElementById(
     "loaderProgressPanel"
   ),
+
   loaderWelcome: document.getElementById(
     "loaderWelcome"
   ),
@@ -67,52 +77,71 @@ const elements = {
   upcomingGrid: document.getElementById("upcomingGrid"),
 
   menuButton: document.getElementById("menuButton"),
+
   navigation: document.getElementById(
     "mainNavigation"
   ),
 
   modalBackdrop: document.getElementById("gameModal"),
-  modalPanel: document.querySelector(".project-modal"),
-  modalClose: document.getElementById("modalClose"),
 
+  modalPanel: document.querySelector(
+    ".project-modal"
+  ),
+
+  modalClose: document.getElementById("modalClose"),
   modalArtwork: document.getElementById("modalArtwork"),
+
   modalCoverImage: document.getElementById(
     "modalCoverImage"
   ),
+
   modalMonogram: document.getElementById(
     "modalMonogram"
   ),
+
   modalProjectNumber: document.getElementById(
     "modalProjectNumber"
   ),
+
   modalThemeLabel: document.getElementById(
     "modalThemeLabel"
   ),
+
   modalStatus: document.getElementById("modalStatus"),
   modalTitle: document.getElementById("modalTitle"),
+
   modalDescription: document.getElementById(
     "modalDescription"
   ),
+
   modalGenre: document.getElementById("modalGenre"),
+
   modalProgress: document.getElementById(
     "modalProgress"
   ),
+
   modalYear: document.getElementById("modalYear"),
+
   modalTechnologies: document.getElementById(
     "modalTechnologies"
   ),
+
   modalFeatures: document.getElementById(
     "modalFeatures"
   ),
+
   modalControls: document.getElementById(
     "modalControls"
   ),
+
   modalResponsibilities: document.getElementById(
     "modalResponsibilities"
   ),
+
   modalPlayButton: document.getElementById(
     "modalPlayButton"
   ),
+
   modalRepositoryButton: document.getElementById(
     "modalRepositoryButton"
   )
@@ -462,9 +491,11 @@ async function loadGames() {
   }
 
   renderGameLibrary(loadedGames);
+
   renderUpcomingProjects(
     loadedGames.length
   );
+
   updateGameCount(
     loadedGames.length
   );
