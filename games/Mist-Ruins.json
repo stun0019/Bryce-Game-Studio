@@ -1,1 +1,86 @@
+{
+  "id": "mist-ruins",
+  "title": "迷霧遺跡",
+  "status": "PLAYABLE PROTOTYPE",
+  "genre": "2D World Exploration",
+  "progress": "Demo V0.1",
+  "releaseYear": 2026,
 
+  "shortDescription": "探索被迷霧籠罩的遺跡地圖，擊退敵人、尋找鑰匙並解開封閉出口的 2D 世界探索原型。",
+
+  "description": "迷霧遺跡是 Bryce Game Studio 收錄的第四款遊戲 Demo，以俯視角 2D 世界探索為核心。玩家可以在大型地圖中移動、攻擊敵人、蒐集鑰匙、開啟寶箱與解除封閉的遺跡出口。遊戲同時提供獨立地圖編輯器，可自行配置地形、碰撞區域、出生點、敵人、鑰匙與其他互動物件，並將編輯結果儲存在瀏覽器中後套用至遊戲。",
+
+  "technologies": [
+    "HTML5 Canvas",
+    "CSS3",
+    "JavaScript",
+    "LocalStorage"
+  ],
+
+  "features": [
+    "俯視角 2D 世界探索",
+    "大型地圖與鏡頭跟隨",
+    "玩家八方向移動",
+    "近距離攻擊系統",
+    "玩家生命值系統",
+    "敵人追蹤與戰鬥",
+    "敵人生命值與擊敗判定",
+    "鑰匙蒐集系統",
+    "上鎖門互動",
+    "寶箱互動",
+    "遺跡出口與通關目標",
+    "出生點重置功能",
+    "多層地圖繪製",
+    "地形碰撞判定",
+    "獨立地圖編輯器",
+    "自訂地圖儲存至瀏覽器",
+    "遊戲內重新讀取自訂地圖",
+    "桌面與行動裝置響應式介面"
+  ],
+
+  "controls": [
+    {
+      "key": "WASD / 方向鍵",
+      "action": "控制角色移動"
+    },
+    {
+      "key": "Space",
+      "action": "使用近距離攻擊"
+    },
+    {
+      "key": "E",
+      "action": "開門、開啟寶箱或進行互動"
+    },
+    {
+      "key": "R",
+      "action": "返回玩家出生點"
+    },
+    {
+      "key": "滑鼠 / 觸控",
+      "action": "操作介面按鈕與地圖編輯器"
+    }
+  ],
+
+  "responsibilities": [
+    "遊戲世界與玩法規劃",
+    "Canvas 遊戲畫面繪製",
+    "玩家移動與碰撞系統",
+    "玩家攻擊系統",
+    "敵人追蹤與戰鬥邏輯",
+    "生命值與遊戲狀態管理",
+    "鑰匙、門與寶箱互動",
+    "鏡頭跟隨系統",
+    "多層地圖資料結構",
+    "地圖編輯器開發",
+    "LocalStorage 地圖儲存",
+    "遊戲介面與資訊面板設計",
+    "響應式畫面調整",
+    "遊戲流程與功能測試"
+  ],
+
+  "coverImage": "",
+  "coverImageAlt": "迷霧遺跡 Mist Ruins 遊戲封面",
+
+  "gameUrl": "https://stun0019.github.io/Mist-Ruins/index.html",
+  "repositoryUrl": "https://github.com/stun0019/Mist-Ruins"
+}
