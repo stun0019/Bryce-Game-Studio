@@ -81,30 +81,20 @@ a:focus-visible,
   margin-inline: auto;
 }
 
-/* =========================================================
-   Loading Page
-   ========================================================= */
+/* Loading Page */
 
 .studio-loader {
   position: fixed;
   inset: 0;
   z-index: 9999;
-
   display: grid;
   place-items: center;
-
   overflow: hidden;
-
   color: #ffffff;
-
-  background:
-    rgba(3, 5, 10, 0.94);
-
+  background: rgba(3, 5, 10, 0.94);
   opacity: 1;
   visibility: visible;
-
   transform: translateZ(0);
-
   transition:
     opacity 250ms ease,
     visibility 250ms ease;
@@ -113,11 +103,8 @@ a:focus-visible,
 .studio-loader::before {
   position: absolute;
   inset: 0;
-
   content: "";
-
   opacity: 0.2;
-
   background-image:
     linear-gradient(
       rgba(255, 255, 255, 0.045) 1px,
@@ -128,9 +115,7 @@ a:focus-visible,
       rgba(255, 255, 255, 0.045) 1px,
       transparent 1px
     );
-
   background-size: 46px 46px;
-
   mask-image:
     radial-gradient(
       circle at center,
@@ -142,20 +127,15 @@ a:focus-visible,
 .studio-loader.is-complete {
   opacity: 0;
   visibility: hidden;
-
   pointer-events: none;
 }
 
 .studio-loader__ambient {
   position: absolute;
-
   width: min(80vw, 720px);
   aspect-ratio: 1;
-
   border-radius: 50%;
-
   opacity: 0.33;
-
   background:
     radial-gradient(
       circle,
@@ -163,9 +143,7 @@ a:focus-visible,
       rgba(63, 125, 255, 0.13) 42%,
       transparent 68%
     );
-
   filter: blur(10px);
-
   animation:
     loaderAmbient 2.6s ease-in-out infinite alternate;
 }
@@ -173,7 +151,6 @@ a:focus-visible,
 .studio-loader__content {
   position: relative;
   z-index: 1;
-
   width: min(calc(100% - 48px), 520px);
 }
 
@@ -185,48 +162,36 @@ a:focus-visible,
 
 .studio-loader__mark {
   display: grid;
-
   width: 52px;
   height: 52px;
-
   place-items: center;
-
   color: #080a10;
-
   background:
     linear-gradient(
       135deg,
       #ffffff,
       #a893ff
     );
-
   font-size: 25px;
   font-weight: 950;
-
   border-radius: 15px;
-
   box-shadow:
     0 0 40px rgba(132, 103, 255, 0.38);
 }
 
 .studio-loader__brand p {
   margin: 0;
-
   font-size:
     clamp(14px, 3.6vw, 19px);
-
   font-weight: 900;
   letter-spacing: 0.16em;
 }
 
 .studio-loader__brand div > span {
   display: block;
-
   margin-top: 4px;
-
   color:
     rgba(255, 255, 255, 0.48);
-
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.17em;
@@ -234,11 +199,8 @@ a:focus-visible,
 
 .studio-loader__progress {
   margin-top: 38px;
-
   opacity: 1;
-
   transform: translateY(0);
-
   transition:
     opacity 180ms ease,
     transform 180ms ease;
@@ -246,7 +208,6 @@ a:focus-visible,
 
 .studio-loader__progress.is-hidden {
   opacity: 0;
-
   transform: translateY(-7px);
 }
 
@@ -254,12 +215,9 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 11px;
-
   color:
     rgba(255, 255, 255, 0.62);
-
   font-size: 10px;
   font-weight: 850;
   letter-spacing: 0.17em;
@@ -267,30 +225,23 @@ a:focus-visible,
 
 .studio-loader__progress-head strong {
   color: #ffffff;
-
   font-size: 12px;
 }
 
 .studio-loader__track {
   position: relative;
-
   height: 5px;
   overflow: hidden;
-
   background:
     rgba(255, 255, 255, 0.08);
-
   border-radius: 999px;
 }
 
 .studio-loader__bar {
   position: absolute;
   inset: 0 auto 0 0;
-
   width: 0%;
-
   border-radius: inherit;
-
   background:
     linear-gradient(
       90deg,
@@ -298,22 +249,17 @@ a:focus-visible,
       #a893ff 52%,
       #66d5ff
     );
-
   box-shadow:
     0 0 18px rgba(132, 103, 255, 0.65),
     0 0 30px rgba(102, 213, 255, 0.28);
-
   transform: translateZ(0);
-
   will-change: width;
 }
 
 .studio-loader__bar::after {
   position: absolute;
   inset: 0;
-
   content: "";
-
   background:
     linear-gradient(
       100deg,
@@ -321,9 +267,7 @@ a:focus-visible,
       rgba(255, 255, 255, 0.75) 50%,
       transparent 90%
     );
-
   transform: translateX(-110%);
-
   animation:
     loaderBarShine 700ms linear infinite;
 }
@@ -332,14 +276,10 @@ a:focus-visible,
   position: absolute;
   top: 50%;
   left: 50%;
-
   width: max-content;
   margin: 0;
-
   opacity: 0;
-
   color: transparent;
-
   background:
     linear-gradient(
       90deg,
@@ -348,33 +288,25 @@ a:focus-visible,
       #a893ff 54%,
       rgba(255, 255, 255, 0.3)
     );
-
   background-size: 220% 100%;
   background-clip: text;
-
   -webkit-background-clip: text;
-
   font-size:
     clamp(30px, 9vw, 54px);
-
   font-weight: 950;
   letter-spacing: 0.14em;
   white-space: nowrap;
-
   transform:
     translate(-50%, -40%)
     scale(0.96);
-
   pointer-events: none;
 }
 
 .studio-loader__welcome.is-visible {
   opacity: 1;
-
   transform:
     translate(-50%, -50%)
     scale(1);
-
   animation:
     welcomeAppear 250ms ease forwards,
     welcomeFlow 720ms linear infinite;
@@ -382,9 +314,7 @@ a:focus-visible,
 
 .site-content {
   opacity: 0;
-
   transform: translateY(6px);
-
   transition:
     opacity 300ms ease,
     transform 300ms ease;
@@ -392,7 +322,6 @@ a:focus-visible,
 
 body.is-ready .site-content {
   opacity: 1;
-
   transform: translateY(0);
 }
 
@@ -415,7 +344,6 @@ body.is-ready .site-content {
 @keyframes welcomeAppear {
   from {
     opacity: 0;
-
     transform:
       translate(-50%, -40%)
       scale(0.96);
@@ -423,7 +351,6 @@ body.is-ready .site-content {
 
   to {
     opacity: 1;
-
     transform:
       translate(-50%, -50%)
       scale(1);
@@ -436,19 +363,14 @@ body.is-ready .site-content {
   }
 }
 
-/* =========================================================
-   Background
-   ========================================================= */
+/* Background */
 
 .page-background {
   position: fixed;
   inset: 0;
   z-index: -10;
-
   overflow: hidden;
-
   pointer-events: none;
-
   background:
     linear-gradient(
       180deg,
@@ -461,9 +383,7 @@ body.is-ready .site-content {
 .page-background__grid {
   position: absolute;
   inset: 0;
-
   opacity: 0.15;
-
   background-image:
     linear-gradient(
       rgba(255, 255, 255, 0.04) 1px,
@@ -474,9 +394,7 @@ body.is-ready .site-content {
       rgba(255, 255, 255, 0.04) 1px,
       transparent 1px
     );
-
   background-size: 54px 54px;
-
   mask-image:
     linear-gradient(
       to bottom,
@@ -487,12 +405,9 @@ body.is-ready .site-content {
 
 .page-background__glow {
   position: absolute;
-
   width: 700px;
   height: 700px;
-
   border-radius: 50%;
-
   filter: blur(16px);
   opacity: 0.17;
 }
@@ -500,7 +415,6 @@ body.is-ready .site-content {
 .page-background__glow--left {
   top: -350px;
   left: -270px;
-
   background:
     radial-gradient(
       circle,
@@ -512,7 +426,6 @@ body.is-ready .site-content {
 .page-background__glow--right {
   top: 140px;
   right: -390px;
-
   background:
     radial-gradient(
       circle,
@@ -521,22 +434,16 @@ body.is-ready .site-content {
     );
 }
 
-/* =========================================================
-   Header
-   ========================================================= */
+/* Header */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-
   min-height: var(--header-height);
-
   border-bottom: 1px solid var(--line);
-
   background:
     rgba(7, 9, 16, 0.78);
-
   backdrop-filter: blur(20px);
 }
 
@@ -544,13 +451,11 @@ body.is-ready .site-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   width:
     min(
       calc(100% - 48px),
       var(--content-width)
     );
-
   min-height: var(--header-height);
   margin-inline: auto;
 }
@@ -563,29 +468,21 @@ body.is-ready .site-content {
 
 .studio-brand__mark {
   display: grid;
-
   width: 42px;
   height: 42px;
-
   place-items: center;
-
   color: #080a10;
-
   background:
     linear-gradient(
       135deg,
       #ffffff,
       #a893ff
     );
-
   font-size: 20px;
   font-weight: 950;
-
   border-radius: 12px;
-
   box-shadow:
     0 0 30px rgba(132, 103, 255, 0.28);
-
   transition:
     transform var(--transition-normal),
     box-shadow var(--transition-normal);
@@ -595,7 +492,6 @@ body.is-ready .site-content {
   transform:
     rotate(-4deg)
     scale(1.06);
-
   box-shadow:
     0 0 42px rgba(132, 103, 255, 0.42);
 }
@@ -603,7 +499,6 @@ body.is-ready .site-content {
 .studio-brand__text {
   display: flex;
   flex-direction: column;
-
   line-height: 1.05;
 }
 
@@ -614,9 +509,7 @@ body.is-ready .site-content {
 
 .studio-brand__text small {
   margin-top: 6px;
-
   color: var(--text-muted);
-
   font-size: 9px;
   font-weight: 750;
   letter-spacing: 0.18em;
@@ -626,18 +519,14 @@ body.is-ready .site-content {
   display: flex;
   gap: 30px;
   align-items: center;
-
   color: var(--text-soft);
-
   font-size: 13px;
   font-weight: 750;
 }
 
 .main-navigation a {
   position: relative;
-
   padding-block: 10px;
-
   transition:
     color var(--transition-fast),
     transform var(--transition-fast);
@@ -649,23 +538,17 @@ a:not(.main-navigation__github)::after {
   right: 0;
   bottom: 4px;
   left: 0;
-
   height: 2px;
-
   content: "";
-
   background: var(--accent-soft);
-
   transform: scaleX(0);
   transform-origin: center;
-
   transition:
     transform var(--transition-normal);
 }
 
 .main-navigation a:hover {
   color: var(--text);
-
   transform: translateY(-1px);
 }
 
@@ -677,44 +560,32 @@ a:not(.main-navigation__github)::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-height: 40px;
   padding: 0 15px !important;
-
   border: 1px solid var(--line-strong);
-
   background:
     rgba(255, 255, 255, 0.035);
-
   border-radius: 11px;
 }
 
 .menu-button {
   display: none;
-
   width: 44px;
   height: 44px;
   padding: 10px;
-
   cursor: pointer;
-
   border: 1px solid var(--line);
-
   background:
     rgba(255, 255, 255, 0.035);
-
   border-radius: 12px;
 }
 
 .menu-button span {
   display: block;
-
   width: 100%;
   height: 2px;
   margin: 5px 0;
-
   background: var(--text);
-
   transition:
     transform var(--transition-normal),
     opacity var(--transition-normal);
@@ -736,16 +607,12 @@ a:not(.main-navigation__github)::after {
     rotate(-45deg);
 }
 
-/* =========================================================
-   Reveal
-   ========================================================= */
+/* Reveal */
 
 [data-reveal],
 .reveal-item {
   opacity: 0;
-
   transform: translateY(28px);
-
   transition:
     opacity 700ms ease var(--reveal-delay, 0ms),
     transform 700ms
@@ -756,33 +623,25 @@ a:not(.main-navigation__github)::after {
 [data-reveal].is-visible,
 .reveal-item.is-visible {
   opacity: 1;
-
   transform: translateY(0);
 }
 
-/* =========================================================
-   Sections
-   ========================================================= */
+/* Sections */
 
 .hero-section {
   display: grid;
-
   grid-template-columns:
     minmax(0, 1.45fr)
     minmax(290px, 0.55fr);
-
   gap: 60px;
   align-items: end;
-
   min-height: 520px;
   padding: 88px 0 66px;
 }
 
 .section-label {
   margin: 0 0 12px;
-
   color: var(--accent-soft);
-
   font-size: 10px;
   font-weight: 850;
   letter-spacing: 0.22em;
@@ -791,21 +650,16 @@ a:not(.main-navigation__github)::after {
 .hero-section h1 {
   max-width: 900px;
   margin: 0;
-
   font-size:
     clamp(50px, 6vw, 88px);
-
   line-height: 0.98;
   letter-spacing: -0.058em;
 }
 
 .hero-section h1 span {
   display: block;
-
   margin-top: 9px;
-
   color: transparent;
-
   background:
     linear-gradient(
       100deg,
@@ -813,39 +667,29 @@ a:not(.main-navigation__github)::after {
       #b6a8ff 52%,
       #66d5ff 100%
     );
-
   background-clip: text;
-
   -webkit-background-clip: text;
 }
 
 .hero-section__description {
   max-width: 760px;
   margin: 26px 0 0;
-
   color: var(--text-soft);
-
   font-size: 17px;
 }
 
 .hero-status {
   position: relative;
-
   overflow: hidden;
-
   padding: 25px;
-
   border: 1px solid var(--line);
-
   background:
     linear-gradient(
       145deg,
       rgba(28, 34, 49, 0.82),
       rgba(13, 17, 26, 0.92)
     );
-
   border-radius: var(--radius-medium);
-
   box-shadow:
     0 22px 68px rgba(0, 0, 0, 0.25);
 }
@@ -854,9 +698,7 @@ a:not(.main-navigation__github)::after {
   display: flex;
   gap: 9px;
   align-items: center;
-
   color: var(--success);
-
   font-size: 10px;
   font-weight: 850;
   letter-spacing: 0.17em;
@@ -865,13 +707,9 @@ a:not(.main-navigation__github)::after {
 .hero-status__online::before {
   width: 7px;
   height: 7px;
-
   content: "";
-
   background: var(--success);
-
   border-radius: 50%;
-
   box-shadow:
     0 0 15px rgba(92, 227, 179, 0.8);
 }
@@ -880,7 +718,6 @@ a:not(.main-navigation__github)::after {
   display: flex;
   gap: 16px;
   align-items: end;
-
   margin-top: 25px;
 }
 
@@ -892,9 +729,7 @@ a:not(.main-navigation__github)::after {
 
 .hero-status__count span {
   max-width: 90px;
-
   color: var(--text-muted);
-
   font-size: 9px;
   font-weight: 850;
   line-height: 1.5;
@@ -904,13 +739,10 @@ a:not(.main-navigation__github)::after {
 .hero-status__technology {
   margin: 25px 0 0;
   padding-top: 18px;
-
   color: var(--text-soft);
-
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.08em;
-
   border-top: 1px solid var(--line);
 }
 
@@ -925,16 +757,13 @@ a:not(.main-navigation__github)::after {
   gap: 50px;
   align-items: end;
   justify-content: space-between;
-
   margin-bottom: 32px;
 }
 
 .section-heading h2 {
   margin: 0;
-
   font-size:
     clamp(35px, 4vw, 54px);
-
   line-height: 1;
   letter-spacing: -0.045em;
 }
@@ -942,22 +771,16 @@ a:not(.main-navigation__github)::after {
 .section-heading > p {
   max-width: 580px;
   margin: 0;
-
   color: var(--text-soft);
-
   font-size: 14px;
 }
 
-/* =========================================================
-   Game Cards
-   ========================================================= */
+/* Game Cards */
 
 .game-grid {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 22px;
 }
 
@@ -967,24 +790,17 @@ a:not(.main-navigation__github)::after {
   --theme-dark: #15112e;
 
   position: relative;
-
   display: flex;
   min-width: 0;
   overflow: hidden;
   flex-direction: column;
-
   border: 1px solid var(--line);
-
   background:
     rgba(14, 18, 27, 0.92);
-
   border-radius: var(--radius-large);
-
   box-shadow:
     0 22px 68px rgba(0, 0, 0, 0.24);
-
   transform-origin: center;
-
   transition:
     transform var(--transition-slow),
     border-color var(--transition-normal),
@@ -1017,16 +833,21 @@ a:not(.main-navigation__github)::after {
   --theme-dark: #2a160d;
 }
 
+.game-card[data-theme="mist"],
+.project-modal[data-theme="mist"] {
+  --theme-primary: #88a978;
+  --theme-secondary: #d7b56d;
+  --theme-dark: #111a14;
+}
+
 .game-card:hover {
   z-index: 2;
-
   border-color:
     color-mix(
       in srgb,
       var(--theme-primary) 52%,
       transparent
     );
-
   box-shadow:
     0 36px 95px rgba(0, 0, 0, 0.4),
     0 0 0 1px
@@ -1035,7 +856,6 @@ a:not(.main-navigation__github)::after {
         var(--theme-primary) 18%,
         transparent
       );
-
   transform:
     translateY(-10px)
     scale(1.018);
@@ -1043,10 +863,8 @@ a:not(.main-navigation__github)::after {
 
 .game-card__artwork {
   position: relative;
-
   min-height: 260px;
   overflow: hidden;
-
   background:
     radial-gradient(
       circle at 74% 28%,
@@ -1076,11 +894,8 @@ a:not(.main-navigation__github)::after {
 .game-card__artwork::before {
   position: absolute;
   inset: 0;
-
   content: "";
-
   opacity: 0.25;
-
   background-image:
     linear-gradient(
       rgba(255, 255, 255, 0.075) 1px,
@@ -1091,9 +906,7 @@ a:not(.main-navigation__github)::after {
       rgba(255, 255, 255, 0.075) 1px,
       transparent 1px
     );
-
   background-size: 34px 34px;
-
   mask-image:
     linear-gradient(
       135deg,
@@ -1106,12 +919,9 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   inset: 0;
   z-index: 2;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   transition:
     transform 700ms
       cubic-bezier(0.2, 0.75, 0.25, 1);
@@ -1124,14 +934,12 @@ a:not(.main-navigation__github)::after {
 .game-card__visual {
   position: absolute;
   inset: 0;
-
   display: grid;
   place-items: center;
 }
 
 .game-card__ring {
   position: absolute;
-
   border:
     1px solid
     color-mix(
@@ -1139,14 +947,12 @@ a:not(.main-navigation__github)::after {
       var(--theme-secondary) 52%,
       transparent
     );
-
   border-radius: 50%;
 }
 
 .game-card__ring--outer {
   width: 172px;
   height: 172px;
-
   box-shadow:
     0 0 0 28px
       color-mix(
@@ -1165,14 +971,12 @@ a:not(.main-navigation__github)::after {
 .game-card__ring--inner {
   width: 104px;
   height: 104px;
-
   transform: rotate(25deg);
 }
 
 .game-card__monogram {
   position: relative;
   z-index: 1;
-
   font-size: 58px;
   font-weight: 950;
   letter-spacing: -0.08em;
@@ -1182,16 +986,13 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   inset: 0;
   z-index: 3;
-
   opacity: 0;
-
   background:
     linear-gradient(
       180deg,
       rgba(6, 8, 13, 0.12),
       rgba(6, 8, 13, 0.82)
     );
-
   transition:
     opacity var(--transition-slow);
 }
@@ -1206,7 +1007,6 @@ a:not(.main-navigation__github)::after {
   right: 18px;
   left: 18px;
   z-index: 5;
-
   display: flex;
   gap: 12px;
   align-items: center;
@@ -1216,7 +1016,6 @@ a:not(.main-navigation__github)::after {
 .game-card__project-number {
   color:
     rgba(255, 255, 255, 0.72);
-
   font-size: 9px;
   font-weight: 850;
   letter-spacing: 0.16em;
@@ -1225,24 +1024,19 @@ a:not(.main-navigation__github)::after {
 .game-card__status {
   max-width: 65%;
   overflow: hidden;
-
   padding: 6px 10px;
-
   color: #ffffff;
-
   background:
     color-mix(
       in srgb,
       var(--theme-primary) 64%,
       #10131b
     );
-
   font-size: 8px;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-overflow: ellipsis;
   white-space: nowrap;
-
   border:
     1px solid
     color-mix(
@@ -1250,7 +1044,6 @@ a:not(.main-navigation__github)::after {
       var(--theme-primary) 58%,
       transparent
     );
-
   border-radius: 999px;
 }
 
@@ -1260,13 +1053,10 @@ a:not(.main-navigation__github)::after {
   bottom: 17px;
   left: 20px;
   z-index: 5;
-
   display: flex;
   justify-content: flex-end;
-
   color:
     rgba(255, 255, 255, 0.56);
-
   font-size: 8px;
   font-weight: 850;
   letter-spacing: 0.18em;
@@ -1278,16 +1068,11 @@ a:not(.main-navigation__github)::after {
   bottom: 22px;
   left: 22px;
   z-index: 6;
-
   display: flex;
   gap: 10px;
-
   opacity: 0;
-
   transform: translateY(18px);
-
   pointer-events: none;
-
   transition:
     opacity var(--transition-slow),
     transform var(--transition-slow);
@@ -1296,9 +1081,7 @@ a:not(.main-navigation__github)::after {
 .game-card:hover
 .game-card__hover-actions {
   opacity: 1;
-
   transform: translateY(0);
-
   pointer-events: auto;
 }
 
@@ -1310,7 +1093,6 @@ a:not(.main-navigation__github)::after {
   display: flex;
   flex: 1;
   flex-direction: column;
-
   min-width: 0;
   padding: 24px;
 }
@@ -1324,9 +1106,7 @@ a:not(.main-navigation__github)::after {
 
 .game-card__genre {
   margin: 0 0 7px;
-
   color: var(--theme-secondary);
-
   font-size: 9px;
   font-weight: 850;
   letter-spacing: 0.13em;
@@ -1335,36 +1115,26 @@ a:not(.main-navigation__github)::after {
 
 .game-card__heading h3 {
   margin: 0;
-
   overflow-wrap: anywhere;
-
   font-size:
     clamp(24px, 2.3vw, 32px);
-
   line-height: 1.08;
   letter-spacing: -0.045em;
 }
 
 .game-card__version {
   flex: 0 0 auto;
-
   padding: 6px 8px;
-
   color: var(--text-muted);
-
   font-size: 9px;
   font-weight: 800;
-
   border: 1px solid var(--line);
-
   border-radius: 8px;
 }
 
 .game-card__description {
   margin: 17px 0 0;
-
   color: var(--text-soft);
-
   font-size: 13px;
 }
 
@@ -1374,10 +1144,8 @@ a:not(.main-navigation__github)::after {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-
   margin: 21px 0 0;
   padding: 0;
-
   list-style: none;
 }
 
@@ -1385,18 +1153,13 @@ a:not(.main-navigation__github)::after {
 .modal-technologies li,
 .responsibility-list li {
   padding: 6px 9px;
-
   color: var(--text-soft);
-
   background:
     rgba(255, 255, 255, 0.035);
-
   font-size: 9px;
   font-weight: 750;
   letter-spacing: 0.06em;
-
   border: 1px solid var(--line);
-
   border-radius: 8px;
 }
 
@@ -1404,7 +1167,6 @@ a:not(.main-navigation__github)::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-top: auto;
   padding-top: 24px;
 }
@@ -1413,28 +1175,20 @@ a:not(.main-navigation__github)::after {
   display: inline-flex;
   gap: 9px;
   align-items: center;
-
   padding: 0;
-
   cursor: pointer;
-
   color: var(--text-soft);
-
   border: 0;
   background: transparent;
-
   font-size: 11px;
   font-weight: 800;
 }
 
 .text-link span {
   position: relative;
-
   display: block;
-
   width: 20px;
   height: 1px;
-
   background: currentColor;
 }
 
@@ -1442,24 +1196,18 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   top: -3px;
   right: 0;
-
   width: 7px;
   height: 7px;
-
   content: "";
-
   border-top:
     1px solid currentColor;
-
   border-right:
     1px solid currentColor;
-
   transform: rotate(45deg);
 }
 
 .game-card__year {
   color: var(--text-muted);
-
   font-size: 10px;
   font-weight: 750;
 }
@@ -1468,26 +1216,19 @@ a:not(.main-navigation__github)::after {
   display: none;
 }
 
-/* =========================================================
-   Buttons
-   ========================================================= */
+/* Buttons */
 
 .button {
   display: inline-flex;
   gap: 9px;
   align-items: center;
   justify-content: center;
-
   min-height: 46px;
   padding: 0 17px;
-
   cursor: pointer;
-
   font-size: 11px;
   font-weight: 850;
-
   border-radius: 11px;
-
   transition:
     transform var(--transition-normal),
     border-color var(--transition-normal),
@@ -1497,7 +1238,6 @@ a:not(.main-navigation__github)::after {
 
 .button--primary {
   color: #ffffff;
-
   border:
     1px solid
     color-mix(
@@ -1508,7 +1248,6 @@ a:not(.main-navigation__github)::after {
       ) 76%,
       white 8%
     );
-
   background:
     linear-gradient(
       120deg,
@@ -1526,12 +1265,9 @@ a:not(.main-navigation__github)::after {
 .button--glass,
 .button--secondary {
   color: var(--text);
-
   border: 1px solid var(--line-strong);
-
   background:
     rgba(255, 255, 255, 0.055);
-
   backdrop-filter: blur(12px);
 }
 
@@ -1542,18 +1278,14 @@ a:not(.main-navigation__github)::after {
 .button:disabled,
 .button.is-disabled {
   cursor: not-allowed;
-
   opacity: 0.4;
-
   pointer-events: none;
 }
 
 .button__arrow {
   position: relative;
-
   width: 17px;
   height: 1px;
-
   background: currentColor;
 }
 
@@ -1561,41 +1293,30 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   top: -3px;
   right: 0;
-
   width: 7px;
   height: 7px;
-
   content: "";
-
   border-top:
     1px solid currentColor;
-
   border-right:
     1px solid currentColor;
-
   transform: rotate(45deg);
 }
 
-/* =========================================================
-   Skeleton
-   ========================================================= */
+/* Skeleton */
 
 .game-skeleton {
   min-height: 495px;
   padding: 17px;
-
   border: 1px solid var(--line);
-
   background:
     rgba(14, 18, 27, 0.72);
-
   border-radius: var(--radius-large);
 }
 
 .game-skeleton__art,
 .game-skeleton__line {
   overflow: hidden;
-
   background:
     linear-gradient(
       100deg,
@@ -1603,23 +1324,19 @@ a:not(.main-navigation__github)::after {
       rgba(255, 255, 255, 0.09) 50%,
       rgba(255, 255, 255, 0.035) 80%
     );
-
   background-size: 200% 100%;
-
   animation:
     skeletonPulse 1.35s linear infinite;
 }
 
 .game-skeleton__art {
   height: 255px;
-
   border-radius: 18px;
 }
 
 .game-skeleton__line {
   height: 12px;
   margin-top: 19px;
-
   border-radius: 999px;
 }
 
@@ -1635,23 +1352,16 @@ a:not(.main-navigation__github)::after {
 
 .load-error {
   grid-column: 1 / -1;
-
   padding: 44px;
-
   text-align: center;
-
   border:
     1px solid rgba(255, 118, 151, 0.28);
-
   background:
     rgba(255, 118, 151, 0.05);
-
   border-radius: var(--radius-medium);
 }
 
-/* =========================================================
-   Upcoming
-   ========================================================= */
+/* Upcoming */
 
 .upcoming-section {
   border-top: 1px solid var(--line);
@@ -1659,36 +1369,27 @@ a:not(.main-navigation__github)::after {
 
 .upcoming-grid {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 14px;
 }
 
 .upcoming-card {
   display: grid;
-
   grid-template-columns:
     auto 58px minmax(0, 1fr) auto;
-
   gap: 16px;
   align-items: center;
-
   min-width: 0;
   padding: 18px;
-
   border: 1px solid var(--line);
-
   background:
     rgba(255, 255, 255, 0.02);
-
   border-radius: 17px;
 }
 
 .upcoming-card__number {
   color: var(--text-muted);
-
   font-size: 10px;
   font-weight: 850;
   letter-spacing: 0.13em;
@@ -1696,24 +1397,18 @@ a:not(.main-navigation__github)::after {
 
 .upcoming-card__visual {
   position: relative;
-
   width: 58px;
   height: 58px;
-
   border: 1px solid var(--line);
-
   border-radius: 15px;
 }
 
 .upcoming-card__visual span {
   position: absolute;
   inset: 50% auto auto 50%;
-
   width: 26px;
   height: 1px;
-
   background: var(--text-muted);
-
   transform:
     translate(-50%, -50%);
 }
@@ -1726,9 +1421,7 @@ a:not(.main-navigation__github)::after {
 
 .upcoming-card__content p {
   margin: 0 0 3px;
-
   color: var(--text-muted);
-
   font-size: 8px;
   font-weight: 850;
   letter-spacing: 0.14em;
@@ -1736,20 +1429,15 @@ a:not(.main-navigation__github)::after {
 
 .upcoming-card__content h3 {
   margin: 0;
-
   color: var(--text-soft);
-
   font-size: 17px;
 }
 
 .upcoming-card__content > span {
   display: block;
-
   margin-top: 3px;
   overflow: hidden;
-
   color: var(--text-muted);
-
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1757,15 +1445,11 @@ a:not(.main-navigation__github)::after {
 
 .upcoming-card__lock {
   position: relative;
-
   width: 20px;
   height: 16px;
-
   opacity: 0.55;
-
   border:
     1px solid var(--text-muted);
-
   border-radius: 3px;
 }
 
@@ -1773,40 +1457,28 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   bottom: 13px;
   left: 4px;
-
   width: 10px;
   height: 9px;
-
   content: "";
-
   border:
     1px solid var(--text-muted);
-
   border-bottom: 0;
-
   border-radius:
     7px 7px 0 0;
 }
 
-/* =========================================================
-   About
-   ========================================================= */
+/* About */
 
 .about-panel {
   display: grid;
-
   grid-template-columns:
     minmax(0, 1.2fr)
     minmax(280px, 0.8fr)
     auto;
-
   gap: 30px;
   align-items: center;
-
   padding: 30px;
-
   border: 1px solid var(--line);
-
   background:
     radial-gradient(
       circle at 10% 20%,
@@ -1814,7 +1486,6 @@ a:not(.main-navigation__github)::after {
       transparent 31%
     ),
     rgba(15, 19, 29, 0.86);
-
   border-radius: var(--radius-large);
 }
 
@@ -1827,30 +1498,23 @@ a:not(.main-navigation__github)::after {
 .about-panel__avatar {
   display: grid;
   flex: 0 0 auto;
-
   width: 72px;
   height: 72px;
-
   place-items: center;
-
   color: #ffffff;
-
   background:
     linear-gradient(
       135deg,
       #8467ff,
       #3f7dff
     );
-
   font-size: 30px;
   font-weight: 950;
-
   border-radius: 21px;
 }
 
 .about-panel h2 {
   margin: 0;
-
   font-size: 31px;
   letter-spacing: -0.04em;
 }
@@ -1858,9 +1522,7 @@ a:not(.main-navigation__github)::after {
 .about-panel__identity p:last-child {
   max-width: 650px;
   margin: 8px 0 0;
-
   color: var(--text-soft);
-
   font-size: 13px;
 }
 
@@ -1872,17 +1534,12 @@ a:not(.main-navigation__github)::after {
 
 .about-panel__skills span {
   padding: 7px 10px;
-
   color: var(--text-soft);
-
   background:
     rgba(255, 255, 255, 0.035);
-
   font-size: 9px;
   font-weight: 750;
-
   border: 1px solid var(--line);
-
   border-radius: 8px;
 }
 
@@ -1890,17 +1547,12 @@ a:not(.main-navigation__github)::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-height: 44px;
   padding: 0 16px;
-
   border: 1px solid var(--line-strong);
-
   background:
     rgba(255, 255, 255, 0.035);
-
   border-radius: 11px;
-
   font-size: 11px;
   font-weight: 850;
   white-space: nowrap;
@@ -1911,13 +1563,9 @@ a:not(.main-navigation__github)::after {
   gap: 24px;
   align-items: center;
   justify-content: space-between;
-
   padding: 30px 0;
-
   color: var(--text-muted);
-
   font-size: 10px;
-
   border-top: 1px solid var(--line);
 }
 
@@ -1925,28 +1573,20 @@ a:not(.main-navigation__github)::after {
   margin: 0;
 }
 
-/* =========================================================
-   Modal
-   ========================================================= */
+/* Modal */
 
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 500;
-
   display: grid;
   overflow-y: auto;
   place-items: center;
-
   padding: 28px;
-
   opacity: 0;
-
   background:
     rgba(3, 5, 9, 0.84);
-
   backdrop-filter: blur(0);
-
   transition:
     opacity 280ms ease,
     backdrop-filter 280ms ease;
@@ -1958,7 +1598,6 @@ a:not(.main-navigation__github)::after {
 
 .modal-backdrop.is-open {
   opacity: 1;
-
   backdrop-filter: blur(16px);
 }
 
@@ -1968,31 +1607,21 @@ a:not(.main-navigation__github)::after {
   --theme-dark: #15112e;
 
   position: relative;
-
   display: grid;
-
   grid-template-columns:
     minmax(300px, 0.75fr)
     minmax(0, 1.25fr);
-
   width: min(100%, 1100px);
   max-height: calc(100vh - 56px);
   overflow: hidden;
-
   opacity: 0;
-
   border: 1px solid var(--line-strong);
-
   background: var(--surface-solid);
-
   border-radius: var(--radius-large);
-
   box-shadow: var(--shadow);
-
   transform:
     translateY(30px)
     scale(0.96);
-
   transition:
     opacity 300ms ease,
     transform 360ms
@@ -2002,7 +1631,6 @@ a:not(.main-navigation__github)::after {
 .modal-backdrop.is-open
 .project-modal {
   opacity: 1;
-
   transform:
     translateY(0)
     scale(1);
@@ -2013,34 +1641,23 @@ a:not(.main-navigation__github)::after {
   top: 16px;
   right: 16px;
   z-index: 12;
-
   display: grid;
-
   width: 42px;
   height: 42px;
-
   place-items: center;
-
   cursor: pointer;
-
   color: var(--text);
-
   border: 1px solid var(--line-strong);
-
   background:
     rgba(8, 10, 16, 0.78);
-
   font-size: 27px;
-
   border-radius: 12px;
 }
 
 .project-modal__artwork {
   position: relative;
-
   min-height: 100%;
   overflow: hidden;
-
   background:
     radial-gradient(
       circle at 70% 30%,
@@ -2071,27 +1688,22 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   inset: 0;
   z-index: 2;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .project-modal__visual {
   position: absolute;
   inset: 0;
-
   display: grid;
   place-items: center;
 }
 
 .project-modal__ring {
   position: absolute;
-
   width: 210px;
   height: 210px;
-
   border:
     1px solid
     color-mix(
@@ -2099,9 +1711,7 @@ a:not(.main-navigation__github)::after {
       var(--theme-secondary) 52%,
       transparent
     );
-
   border-radius: 50%;
-
   box-shadow:
     0 0 0 34px
       color-mix(
@@ -2115,7 +1725,6 @@ a:not(.main-navigation__github)::after {
         var(--theme-primary) 22%,
         transparent
       );
-
   animation:
     modalRing 12s linear infinite;
 }
@@ -2129,7 +1738,6 @@ a:not(.main-navigation__github)::after {
 .project-modal__monogram {
   position: relative;
   z-index: 1;
-
   font-size: 72px;
   font-weight: 950;
   letter-spacing: -0.08em;
@@ -2141,13 +1749,10 @@ a:not(.main-navigation__github)::after {
   bottom: 20px;
   left: 22px;
   z-index: 4;
-
   display: flex;
   justify-content: space-between;
-
   color:
     rgba(255, 255, 255, 0.64);
-
   font-size: 8px;
   font-weight: 850;
   letter-spacing: 0.16em;
@@ -2155,15 +1760,12 @@ a:not(.main-navigation__github)::after {
 
 .project-modal__body {
   overflow-y: auto;
-
   padding: 52px 38px 36px;
 }
 
 .project-modal__status {
   margin: 0 0 8px;
-
   color: var(--theme-secondary);
-
   font-size: 9px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -2171,32 +1773,24 @@ a:not(.main-navigation__github)::after {
 
 .project-modal__header h2 {
   margin: 0;
-
   overflow-wrap: anywhere;
-
   font-size:
     clamp(36px, 5vw, 54px);
-
   line-height: 1.05;
   letter-spacing: -0.05em;
 }
 
 .project-modal__header > p:last-child {
   margin: 18px 0 0;
-
   color: var(--text-soft);
-
   font-size: 13px;
 }
 
 .project-facts {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
-
   gap: 10px;
-
   margin: 26px 0 0;
 }
 
@@ -2204,43 +1798,34 @@ a:not(.main-navigation__github)::after {
 .detail-panel {
   min-width: 0;
   padding: 14px;
-
   border: 1px solid var(--line);
-
   background:
     rgba(255, 255, 255, 0.025);
-
   border-radius: 11px;
 }
 
 .project-facts dt {
   color: var(--text-muted);
-
   font-size: 8px;
   font-weight: 800;
 }
 
 .project-facts dd {
   margin: 5px 0 0;
-
   font-size: 11px;
   font-weight: 750;
 }
 
 .project-detail-grid {
   display: grid;
-
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
-
   gap: 14px;
-
   margin-top: 24px;
 }
 
 .detail-panel {
   padding: 20px;
-
   border-radius: 14px;
 }
 
@@ -2250,9 +1835,7 @@ a:not(.main-navigation__github)::after {
 
 .detail-panel__label {
   margin: 0 0 4px;
-
   color: var(--theme-secondary);
-
   font-size: 7px;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -2260,7 +1843,6 @@ a:not(.main-navigation__github)::after {
 
 .detail-panel h3 {
   margin: 0;
-
   font-size: 17px;
 }
 
@@ -2268,7 +1850,6 @@ a:not(.main-navigation__github)::after {
 .control-list {
   margin: 15px 0 0;
   padding: 0;
-
   list-style: none;
 }
 
@@ -2279,11 +1860,8 @@ a:not(.main-navigation__github)::after {
 
 .check-list li {
   position: relative;
-
   padding-left: 18px;
-
   color: var(--text-soft);
-
   font-size: 11px;
 }
 
@@ -2291,14 +1869,10 @@ a:not(.main-navigation__github)::after {
   position: absolute;
   top: 0.72em;
   left: 0;
-
   width: 6px;
   height: 6px;
-
   content: "";
-
   background: var(--theme-primary);
-
   border-radius: 50%;
 }
 
@@ -2309,16 +1883,12 @@ a:not(.main-navigation__github)::after {
 
 .control-list li {
   display: grid;
-
   grid-template-columns:
     minmax(76px, auto)
     1fr;
-
   gap: 10px;
   align-items: center;
-
   color: var(--text-soft);
-
   font-size: 11px;
 }
 
@@ -2326,28 +1896,21 @@ a:not(.main-navigation__github)::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-height: 28px;
   padding: 5px 8px;
-
   color: var(--text);
-
   background:
     rgba(255, 255, 255, 0.055);
-
   font-family: inherit;
   font-size: 9px;
   font-weight: 800;
-
   border: 1px solid var(--line-strong);
-
   border-radius: 7px;
 }
 
 .project-modal__actions {
   display: flex;
   gap: 12px;
-
   margin-top: 24px;
 }
 
@@ -2355,9 +1918,7 @@ a:not(.main-navigation__github)::after {
   min-width: 160px;
 }
 
-/* =========================================================
-   Tablet
-   ========================================================= */
+/* Tablet */
 
 @media (max-width: 1100px) {
   .game-grid {
@@ -2373,7 +1934,6 @@ a:not(.main-navigation__github)::after {
   .hero-section {
     grid-template-columns: 1fr;
     gap: 34px;
-
     min-height: auto;
   }
 
@@ -2392,7 +1952,6 @@ a:not(.main-navigation__github)::after {
 
   .project-modal {
     grid-template-columns: 1fr;
-
     max-width: 820px;
   }
 
@@ -2424,29 +1983,19 @@ a:not(.main-navigation__github)::after {
     top: calc(100% + 1px);
     right: 16px;
     left: 16px;
-
     flex-direction: column;
     gap: 4px;
     align-items: stretch;
-
     padding: 12px;
-
     visibility: hidden;
     opacity: 0;
-
     border: 1px solid var(--line);
-
     background:
       rgba(10, 13, 20, 0.98);
-
     border-radius: 16px;
-
     box-shadow: var(--shadow);
-
     transform: translateY(-10px);
-
     pointer-events: none;
-
     transition:
       opacity var(--transition-normal),
       transform var(--transition-normal),
@@ -2456,9 +2005,7 @@ a:not(.main-navigation__github)::after {
   .main-navigation.is-open {
     visibility: visible;
     opacity: 1;
-
     transform: translateY(0);
-
     pointer-events: auto;
   }
 
@@ -2466,10 +2013,8 @@ a:not(.main-navigation__github)::after {
   .main-navigation__github {
     display: flex;
     align-items: center;
-
     min-height: 44px;
     padding: 0 14px !important;
-
     border-radius: 10px;
   }
 
@@ -2496,9 +2041,7 @@ a:not(.main-navigation__github)::after {
   }
 }
 
-/* =========================================================
-   Mobile Transform Carousel
-   ========================================================= */
+/* Mobile Transform Carousel */
 
 @media (max-width: 650px) {
   .studio-brand__text small {
@@ -2537,13 +2080,10 @@ a:not(.main-navigation__github)::after {
 
   .game-grid {
     position: relative;
-
     display: block;
-
     width: 100%;
     height: 526px;
     overflow: hidden;
-
     touch-action: pan-y;
   }
 
@@ -2551,24 +2091,17 @@ a:not(.main-navigation__github)::after {
     position: absolute;
     top: 12px;
     left: 50%;
-
     width:
       min(78vw, 340px);
-
     min-height: 500px;
-
     opacity: 0;
-
     pointer-events: none;
-
     will-change:
       transform,
       opacity;
-
     transform:
       translate3d(-50%, 20px, 0)
       scale(0.84);
-
     transition:
       transform 520ms
         cubic-bezier(
@@ -2580,27 +2113,21 @@ a:not(.main-navigation__github)::after {
       opacity 360ms ease,
       border-color 360ms ease,
       box-shadow 420ms ease;
-
     backface-visibility: hidden;
-
     contain:
       layout paint style;
   }
 
   .game-card.is-carousel-active {
     z-index: 3;
-
     opacity: 1;
-
     pointer-events: auto;
-
     border-color:
       color-mix(
         in srgb,
         var(--theme-primary) 52%,
         transparent
       );
-
     box-shadow:
       0 28px 74px
         rgba(0, 0, 0, 0.38),
@@ -2610,7 +2137,6 @@ a:not(.main-navigation__github)::after {
           var(--theme-primary) 18%,
           transparent
         );
-
     transform:
       translate3d(-50%, 0, 0)
       scale(1);
@@ -2618,9 +2144,7 @@ a:not(.main-navigation__github)::after {
 
   .game-card.is-carousel-prev {
     z-index: 2;
-
     opacity: 0.42;
-
     transform:
       translate3d(
         calc(-50% - 78vw),
@@ -2632,9 +2156,7 @@ a:not(.main-navigation__github)::after {
 
   .game-card.is-carousel-next {
     z-index: 2;
-
     opacity: 0.42;
-
     transform:
       translate3d(
         calc(-50% + 78vw),
@@ -2646,9 +2168,7 @@ a:not(.main-navigation__github)::after {
 
   .game-card.is-carousel-far-left {
     z-index: 1;
-
     opacity: 0;
-
     transform:
       translate3d(
         calc(-50% - 156vw),
@@ -2660,9 +2180,7 @@ a:not(.main-navigation__github)::after {
 
   .game-card.is-carousel-far-right {
     z-index: 1;
-
     opacity: 0;
-
     transform:
       translate3d(
         calc(-50% + 156vw),
@@ -2674,7 +2192,6 @@ a:not(.main-navigation__github)::after {
 
   .game-card:hover {
     border-color: var(--line);
-
     box-shadow:
       0 22px 68px
         rgba(0, 0, 0, 0.24);
@@ -2687,7 +2204,6 @@ a:not(.main-navigation__github)::after {
         var(--theme-primary) 52%,
         transparent
       );
-
     box-shadow:
       0 28px 74px
         rgba(0, 0, 0, 0.38),
@@ -2697,7 +2213,6 @@ a:not(.main-navigation__github)::after {
           var(--theme-primary) 18%,
           transparent
         );
-
     transform:
       translate3d(-50%, 0, 0)
       scale(1);
@@ -2728,7 +2243,6 @@ a:not(.main-navigation__github)::after {
   .game-card__description {
     display: -webkit-box;
     overflow: hidden;
-
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
   }
@@ -2738,7 +2252,6 @@ a:not(.main-navigation__github)::after {
     gap: 7px;
     align-items: center;
     justify-content: center;
-
     min-height: 22px;
     margin-top: 4px;
   }
@@ -2747,16 +2260,11 @@ a:not(.main-navigation__github)::after {
     width: 6px;
     height: 6px;
     padding: 0;
-
     cursor: pointer;
-
     border: 0;
-
     background:
       rgba(255, 255, 255, 0.22);
-
     border-radius: 50%;
-
     transition:
       width 240ms ease,
       background 240ms ease;
@@ -2764,9 +2272,7 @@ a:not(.main-navigation__github)::after {
 
   .carousel-dot.is-active {
     width: 22px;
-
     background: var(--accent-soft);
-
     border-radius: 999px;
   }
 
@@ -2790,9 +2296,7 @@ a:not(.main-navigation__github)::after {
   .about-panel__avatar {
     width: 58px;
     height: 58px;
-
     font-size: 24px;
-
     border-radius: 17px;
   }
 
@@ -2809,7 +2313,6 @@ a:not(.main-navigation__github)::after {
   .project-modal {
     max-height:
       calc(100vh - 20px);
-
     border-radius: 20px;
   }
 
@@ -2834,9 +2337,7 @@ a:not(.main-navigation__github)::after {
   }
 }
 
-/* =========================================================
-   Reduced Motion
-   ========================================================= */
+/* Reduced Motion */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -2848,13 +2349,10 @@ a:not(.main-navigation__github)::after {
   *::after {
     animation-duration:
       0.01ms !important;
-
     animation-iteration-count:
       1 !important;
-
     transition-duration:
       0.01ms !important;
-
     transition-delay:
       0ms !important;
   }
@@ -2862,7 +2360,6 @@ a:not(.main-navigation__github)::after {
   [data-reveal],
   .reveal-item {
     opacity: 1;
-
     transform: none;
   }
 }
